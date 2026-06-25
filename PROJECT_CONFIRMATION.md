@@ -70,7 +70,7 @@ They provided APK files only — **no source code**. All work is done by decompi
 
 1. **This is a Jetpack Compose app** — there is NO traditional XML toolbar/ActionBar. The theme is `NoActionBar`. All UI is Compose. The overlay is added to the `DecorView` (root Android view), not to a Compose composable.
 
-2. **The original APK was a split APK (App Bundle)** — installing just the base APK gives the error *"App not compatible with your phone"*. The fix is merging all 3 splits into one monolithic APK and removing `requiredSplitTypes` from the manifest.
+2. **The original APK was a split APK (App Bundle)** — installing just the base APK gives *"App not compatible with your phone"*. Fix: copy ARM64 libs from the arm64 split and remove `requiredSplitTypes` from the manifest. **Do NOT merge the xhdpi split resources** — doing so causes aapt2 to reassign all resource IDs, which crashes Firebase on launch with `Resources$NotFoundException: Unable to find resource ID #0x7f120139`.
 
 3. **`extractNativeLibs` must be `true`** in the manifest when native `.so` libs are embedded directly in the APK (as we do after merging). If it's `false`, the app will crash on launch because Android won't unpack the libs.
 

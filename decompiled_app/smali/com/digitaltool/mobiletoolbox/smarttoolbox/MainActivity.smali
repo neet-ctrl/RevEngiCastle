@@ -1827,6 +1827,10 @@
     .line 155
     invoke-static {p0, v0}, Lc/d;->a(Lb/p;Ln3/d;)V
 
+    .line 156
+    .line 157
+    .line 158
+
     # --- BEGIN: Calc Premium Overlay ---
     invoke-virtual {p0}, Landroid/app/Activity;->getWindow()Landroid/view/Window;
     move-result-object v0
@@ -1856,9 +1860,6 @@
     invoke-virtual {v0, v1, v2}, Landroid/view/ViewGroup;->addView(Landroid/view/View;Landroid/view/ViewGroup$LayoutParams;)V
     # --- END: Calc Premium Overlay ---
 
-    .line 156
-    .line 157
-    .line 158
     return-void
 .end method
 

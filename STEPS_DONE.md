@@ -229,7 +229,8 @@ Number of signers: 1
 
 | Issue | Cause | Fix |
 |-------|-------|-----|
-| "App not compatible with phone" | Split APK — needed all 3 parts | Merged all splits into single APK (STEP 4+5) |
+| "App not compatible with phone" | Split APK — needed all 3 parts | Merge ARM64 libs into base + fix manifest (STEP 4+5) |
+| **App crashes on launch — `Resources$NotFoundException: #0x7f120139`** | Merging xhdpi split resources caused aapt2 to **reassign all resource IDs** — Firebase has the original IDs hardcoded in its dex | **⚠️ DO NOT merge xhdpi resources. Only copy ARM64 libs.** Base APK already has fallback drawables for all densities |
 | `apksigner` not found | Not in android-tools package | Installed separately: `installSystemDependencies(["apksigner"])` |
 | `zipalign` not available | Not in Nix packages | Not needed — apksigner handles modern signing without it |
 | v1/v2 schemes show `false` in verify | APK targets minSdk 28+ with v3 support | v3 scheme is sufficient for Android 9+ |
