@@ -1274,6 +1274,34 @@ Change to:
 
 ---
 
+### ERROR 16 — `ClassNotFoundException: DqApplication` + `outs_size > registers_size` (crash on launch after Patch 16)
+
+**When:** App crashes instantly on launch after applying a `return-void` stub to `f5(JZ)V`:
+```
+java.lang.RuntimeException: Unable to instantiate application com.gxgx.daqiandy.app.DqApplication
+Caused by: java.lang.ClassNotFoundException: Didn't find class "com.gxgx.daqiandy.app.DqApplication"
+Suppressed: java.io.IOException: Failed to open dex files from base.apk because:
+  Failure to verify dex file 'base.apk': outs_size (8d) > registers_size (5d)
+```
+
+**Cause:** Patch 16 stubbed `f5(JZ)V` by inserting `return-void` at the top AND changing `.locals 12` to `.locals 0`. The Dalvik verifier validates **all bytecode in a method, including unreachable dead code after an early return**. The dead code after `return-void` contains an `invoke-direct/range {v2..v9}` call (the `j3` coroutine constructor) that needs 8 argument register slots. With `.locals 0`, total registers = 0 locals + 4 params (p0=this, p1+p2=J, p3=Z) = 4 — not enough for the 8-slot invoke. The verifier rejects the entire DEX, which means `classes.dex` fails to open → `DqApplication` can't be loaded → crash.
+
+**Fix:** Keep `.locals` at the **original count** (12) when leaving dead code in place. The early `return-void` still runs first, but the verifier is satisfied because enough registers exist for all bytecode in the method:
+
+```smali
+.method public final f5(JZ)V
+    .locals 12           ← KEEP original count (not 0)
+
+    # PATCH 16: stub getTrailerPlayUrl()
+    return-void
+
+    [original dead code below — verifier validates it but it never runs]
+```
+
+**Rule:** When stubbing a void method with `return-void` + leaving dead code: keep `.locals N` = original N. Only reduce `.locals` to 0 when you **also strip all dead code** after the return. The verifier enforces `outs_size ≤ registers_size` across the entire method body regardless of reachability.
+
+---
+
 ### ERROR 14 — The decompiled smali/ directory gets partially created then the process dies
 
 **When:** Running full `apktool d` on a large APK

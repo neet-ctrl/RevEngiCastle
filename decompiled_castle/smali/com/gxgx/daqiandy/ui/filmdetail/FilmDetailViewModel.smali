@@ -33090,7 +33090,7 @@
 .end method
 
 .method public final f5(JZ)V
-    .locals 0
+    .locals 12
 
     # PATCH 16: stub getTrailerPlayUrl() - prevent titbit/trailer URL from replacing full episode stream
     return-void
