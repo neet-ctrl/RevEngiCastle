@@ -62,6 +62,9 @@
 | 7 | 10-min restriction (main enforcer) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$k0.smali` | `onFinish()V` → `return-void` immediately |
 | 8 | Seek-past-10min dialog | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity.smali` | `g5(VideoContentActivity, Pair)Unit` → return `Unit.INSTANCE` immediately (no dialog shown) |
 | 9 | Seek position VIP check | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity.smali` | `V3(Integer)Z` → always return `false` (seek position never treated as VIP-restricted) |
+| 10 | 10-min dialog (onStateComplete lambda) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$m0$f.smali` | `invokeSuspend()` → `goto :cond_0` immediately (skip `.show("LimitShowVipDialog")`) |
+| 11 | 10-min dialog (w() direct show) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$m0.smali` | `w(List,VideoContentActivity,Z,I)Unit` → return `Unit.INSTANCE` immediately |
+| 12 | 10-min dialog (isPreview paywall gate) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$m0.smali` | In `onStateComplete()`: `goto :goto_0` → `goto :cond_0` to force `isPreview=false` always |
 
 ### Result:
 - **castle_patched.apk** (53 MB) in `output/` — ready to install
@@ -71,6 +74,15 @@
 - Seeking past the 10-minute mark no longer shows the "Subscribe to Premium" dialog
 - Seek position check always returns "not restricted" — full timeline scrubbing available
 - NO manifest changes needed (Castle is a single APK, not split)
+
+### Why the dialog still appeared after the first round of patches (IMPORTANT):
+The first 9 patches silenced the **CountDownTimer `onFinish()` paths** — preventing the timer expiry from directly calling any action. However, the "10-minute free trial has ended" dialog (`LimitShowVipDialogFragment`) has **three additional independent show paths** that were missed:
+
+1. **`VideoContentActivity$m0$f` (onStateComplete lambda)** — The JZVideo player's `onStateComplete` callback fires when the player is paused/stopped (by the timer `onTick` logic calling `J6(null)`). Inside this callback, a coroutine lambda (`m0$f.invokeSuspend`) directly calls `LimitShowVipDialogFragment.show()`. This path bypasses all `onFinish()` patches entirely.
+
+2. **`VideoContentActivity$m0.w()` static method** — A static helper called by the VIP episode list observer. When the premium video's episode list updates, this method checks `getPremiumProPermission()` and shows the dialog. Patched to return `Unit.INSTANCE` immediately.
+
+3. **`VideoContentActivity$m0.onStateComplete()` isPreview gate** — Inside `onStateComplete()` there is a second direct dialog-creation block gated on `VideoBean.isPreview() == TRUE`. Even with the VIP (`rc/h.C()Z`) check patched, this `isPreview()` field comes from the server's video metadata (not the local VIP check). Patched by forcing `goto :cond_0` so `isPreview` is always treated as `false`.
 
 ---
 

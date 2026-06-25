@@ -3887,7 +3887,11 @@
 .end method
 
 .method public static final w(Ljava/util/List;Lcom/gxgx/daqiandy/ui/filmdetail/VideoContentActivity;ZI)Lkotlin/Unit;
-    .locals 8
+    .locals 1
+
+    # PATCH: never show LimitShowVipDialog from w() — return immediately
+    sget-object v0, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
+    return-object v0
 
     .line 1
     invoke-interface {p0}, Ljava/util/List;->size()I
@@ -9196,7 +9200,8 @@
     move-result v1
 
     .line 99
-    goto :goto_0
+    # PATCH: force isPreview=false — never enter the premium paywall branch
+    goto :cond_0
 
     .line 100
     :cond_0

@@ -174,7 +174,8 @@
     move-result-object p1
 
     .line 17
-    if-eqz p1, :cond_0
+    # PATCH: never show LimitShowVipDialog in onStateComplete lambda
+    goto :cond_0
 
     .line 18
     .line 19
