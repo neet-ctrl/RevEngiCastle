@@ -4,6 +4,30 @@
 
 ---
 
+## STEP 10 — Unlock All Premium Features (Free for All Users)
+
+### What was patched (3 smali files):
+
+**Patch 1 — `decompiled_app/smali/af/u.smali` (DataStore READ — always return true)**
+At `:cond_1b` label, inserted `const/4 v4, 0x1` before `Boolean.valueOf(v4)`.
+This forces the DataStore read of `is_pro_user` to always return `true`, regardless of stored value.
+
+**Patch 2 — `decompiled_app/smali/nb/q.smali` (DataStore WRITE — always write true)**
+Before `invoke-static {v2}, Boolean->valueOf(Z)` that writes `nb/m;->e` (the `is_pro_user` key),
+inserted `const/4 v2, 0x1`. This ensures any write to the pro-user flag always persists `true`.
+
+**Patch 3 — `decompiled_app/smali/li/w.smali` (Billing check — always take "subscribed" path)**
+Before `if-eqz v5, :cond_67` (the branch that skips to non-pro path when subscription not found),
+inserted `const/4 v5, 0x1`. This forces the billing check to always consider the user subscribed,
+bypassing the `smart_toolbox_subscription` Play Billing verification.
+
+### DataStore key confirmed: `is_pro_user` (field `nb/m;->e`, boolean type via `xl/n0;->a()`)
+### Product IDs found: `smart_toolbox_subscription`, `smart_toolbox_pro_lifetime`
+
+### Result: All premium features unlocked for all users — no subscription required.
+
+---
+
 ## Project Overview
 
 - **Original app:** Smart Toolbox (`com.digitaltool.mobiletoolbox.smarttoolbox`)

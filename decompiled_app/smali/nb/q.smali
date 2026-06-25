@@ -155,6 +155,7 @@
 
     .line 22
     .line 23
+    const/4 v2, 0x1
     invoke-static {v2}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
 
     .line 24

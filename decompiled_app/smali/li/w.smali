@@ -7704,6 +7704,7 @@
     move-result v5
 
     .line 2317
+    const/4 v5, 0x1
     if-eqz v5, :cond_67
 
     .line 2318

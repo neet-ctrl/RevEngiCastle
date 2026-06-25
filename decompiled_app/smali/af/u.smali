@@ -1013,6 +1013,7 @@
 
     .line 455
     :cond_1b
+    const/4 v4, 0x1
     invoke-static {v4}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
 
     .line 456
