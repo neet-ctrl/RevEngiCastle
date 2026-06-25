@@ -2,6 +2,10 @@
 > Written: 2026-06-25
 > Use this file for any future APK modification work
 
+> **NOTE:** This guide covers the old Smart Toolbox / Calc badge project.
+> For the Castle streaming app (current project), see **CASTLE_GUIDE.md** — that is the authoritative guide.
+> Castle output: `output/castle_patched.apk` (53 MB, signed, 10-min restriction removed + VIP unlocked).
+
 ---
 
 ## WHAT THE USER GAVE US

@@ -1,6 +1,63 @@
-# Steps Done — Calc Premium APK
+# Steps Done
 > Last updated: 2026-06-25
 > For any agent picking this up — read every section before making changes.
+
+---
+
+## CASTLE APK — 10-Minute Restriction Removal
+
+### What was patched (4 smali files):
+
+**Patch 4 — `decompiled_castle/smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$k0.smali` (Main 10-min enforcer)**
+`onFinish()V` → replaced entire body with `return-void`.
+This was the REAL enforcer: when the timer fired, it called `FilmDetailViewModel.A9(true)` which stopped playback. Now it does nothing.
+
+**Patch 5 — `decompiled_castle/smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel$b8.smali` (VipTimeConfig timer)**
+`onFinish()V` → replaced entire body with `return-void`.
+This timer called `setVipTimeCardView(true, minutes)` to show the VIP upgrade card and pause video. Now it does nothing.
+
+**Patch 6 — `decompiled_castle/smali/com/gxgx/daqiandy/member/VipFilmHelper$c$c$a.smali` (Timer path C)**
+`onFinish()V` → `return-void`. Secondary VipFilmHelper countdown path — silenced.
+
+**Patch 7 — `decompiled_castle/smali/com/gxgx/daqiandy/member/VipFilmHelper$c$b$a.smali` (Timer path B)**
+`onFinish()V` → `return-void`. Secondary VipFilmHelper countdown path — silenced.
+
+### How the 10-min restriction worked (for reference):
+1. Server provides a VIP content end-time in the stream metadata
+2. `VipFilmHelper` creates a `CountDownTimer` targeting that end-time
+3. When the timer fires, `onFinish()` is called on the inner anonymous class
+4. That calls through to `VideoContentActivity$k0.onFinish()` → `FilmDetailViewModel.A9(true)` → stops playback
+5. By stubbing all 4 `onFinish()` methods to `return-void`, the timer fires but nothing happens
+
+**Patch 8 — `VideoContentActivity.smali` → `g5(VideoContentActivity, Pair)Lkotlin/Unit;` (Seek dialog)**
+`g5()` creates and shows `LimitShowVipDialogFragment` — the "10-minute free trial has ended, Subscribe to Premium" popup that appears when user scrubs past 10 min.
+Stubbed to `sget-object v0, Lkotlin/Unit;->INSTANCE; return-object v0` — dialog is never created or shown.
+
+**Patch 9 — `VideoContentActivity.smali` → `V3(Integer)Z` (Seek position VIP check)**
+`V3()` receives the seek position as an Integer and returns `true` if the position is beyond the VIP preview time.
+Stubbed to `const/4 v0, 0x0; return v0` — always returns `false`, meaning no seek position is ever treated as VIP-restricted.
+
+### How the seek restriction worked (for reference):
+1. User drags seek bar to position > 10 minutes
+2. `V3(seekPosition)` is called — returns `true` (restricted) since position > previewTime
+3. `g5(activity, Pair<seekPosition, minutes>)` is invoked → creates `LimitShowVipDialogFragment`
+4. Dialog shown: "The 10-minute free trial has ended. Please subscribe to Premium to continue watching."
+5. A lock icon 🔒 appears on the timeline at the 10-minute mark
+6. By stubbing both `g5()` (no dialog) and `V3()` (no restriction), seeks work freely
+
+### Output:
+- **`output/castle_patched.apk`** (53 MB) — the only file in `output/`, signed, ready to install
+- Signed with v1 + v2 + v3 ✅
+
+---
+
+## CASTLE APK — VIP Unlock (Session 1 — done previously)
+
+Patches 1–3 (VIP client-side unlock) are documented in `CASTLE_GUIDE.md` Section 2.
+
+---
+
+## Calc / Smart Toolbox APK — Premium Unlock (older work)
 
 ---
 
