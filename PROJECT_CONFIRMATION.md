@@ -1,48 +1,118 @@
 # Project Confirmation
+> Last updated: 2026-06-25
 
-## What You Want
-- You own an Android app called **Calc**
-- You are providing APK files (no source code available)
-- You want me to **decompile the APK**, make modifications, and **recompile a working signed APK**
+---
 
-## Task #1 — Add Premium Overlay (Current Task)
-- Add a **"Calc" premium label/overlay** to the app's header/toolbar
-- It should always be visible
-- No other changes — only this label added
-- Final output: a signed APK that installs without errors
+## What This Project Is
 
-## How I Will Help
+The user owns an Android app called **"Calc"** (original package: `com.digitaltool.mobiletoolbox.smarttoolbox`, original name: Smart Toolbox).
 
-### Step 1 — Decompile
-- Use **apktool** to fully decompile the APK into readable resources and smali code
+They provided APK files only — **no source code**. All work is done by decompiling the APK, modifying smali/resources, recompiling, and signing.
 
-### Step 2 — Modify
-- Find the main layout/toolbar XML files
-- Add a **premium "Calc" text overlay** to the header area
-- Keep the change minimal so the app stays stable
+---
 
-### Step 3 — Recompile
-- Rebuild the APK using apktool
-- Align the APK using zipalign
+## What Was Requested
 
-### Step 4 — Sign
-- Sign the APK using a keystore (jks file)
-- You will provide a signing JKS file if needed
-- Output: a fully signed APK that installs cleanly on Android
+1. ✅ Decompile the APK files
+2. ✅ Add a **"Calc" premium overlay label** to the header — always visible on every screen
+3. ✅ Produce a **single signed APK** that installs without errors on Android (including Android 16)
+4. ⬜ Set up **GitHub Actions** to automate this — partially done (needs split-merge update)
 
-### Step 5 — GitHub Actions (After Finalizing)
-- Set up a **GitHub Actions workflow** that:
-  - Takes your APK
-  - Decompiles → Patches → Recompiles → Signs automatically
-  - Produces a downloadable signed APK on every run
+---
 
-## Files You Provided
-- `base_1782379525164.apk` — main APK
-- `split_config.arm64_v8a_1782379525201.apk` — ARM64 split
-- `split_config.xhdpi_1782379525236.apk` — XHDPI resources split
+## Current Status
 
-## Important Notes
-- You have confirmed this is YOUR app
-- No source code will be needed — everything is done from the APK files
-- Signing errors will be handled — the final APK will install without errors
-- If a new JKS signing file is needed, you will provide it
+| Task | Status | Output File |
+|------|--------|-------------|
+| Decompile base APK | ✅ Done | `decompiled_app/` |
+| Decompile split APKs | ✅ Done | `decompiled_arm64/`, `decompiled_xhdpi/` |
+| Inject "Calc" overlay | ✅ Done | `decompiled_app/smali/.../MainActivity.smali` |
+| Merge splits into base | ✅ Done | `decompiled_app/lib/`, `decompiled_app/res/` |
+| Fix manifest (remove splits) | ✅ Done | `decompiled_app/AndroidManifest.xml` |
+| Rebuild APK | ✅ Done | `output/calc_merged_unsigned.apk` |
+| Sign APK | ✅ Done | `output/calc_final.apk` ← **USE THIS** |
+| GitHub Actions workflow | ⚠️ Partial | `.github/workflows/build-signed-apk.yml` |
+
+---
+
+## APK Files Provided by User
+
+| File | Description |
+|------|-------------|
+| `attached_assets/base_1782379525164.apk` | Main base APK (61 MB) |
+| `attached_assets/split_config.arm64_v8a_...apk` | ARM64 native libs split (5 MB) |
+| `attached_assets/split_config.xhdpi_...apk` | XHDPI screen density split (71 KB) |
+
+---
+
+## Signing Info (All Hardcoded — No Env Vars)
+
+| Field | Value |
+|-------|-------|
+| JKS file location | `signing/my-release-key.jks` |
+| Store password | `Sh@090609` |
+| Key alias | `my-key` |
+| Key password | `Sh@090609` |
+
+---
+
+## The "Calc" Overlay — What It Looks Like
+
+- Text: `" Calc "`
+- Color: White text on **gold background** (`#FFD700`)
+- Size: 16sp, Bold
+- Position: **Top-right corner** of every screen, always on top
+- Implemented by: Adding a `TextView` to the app's `DecorView` in `MainActivity.onCreate()`
+
+---
+
+## Critical Technical Notes for Any Agent
+
+1. **This is a Jetpack Compose app** — there is NO traditional XML toolbar/ActionBar. The theme is `NoActionBar`. All UI is Compose. The overlay is added to the `DecorView` (root Android view), not to a Compose composable.
+
+2. **The original APK was a split APK (App Bundle)** — installing just the base APK gives the error *"App not compatible with your phone"*. The fix is merging all 3 splits into one monolithic APK and removing `requiredSplitTypes` from the manifest.
+
+3. **`extractNativeLibs` must be `true`** in the manifest when native `.so` libs are embedded directly in the APK (as we do after merging). If it's `false`, the app will crash on launch because Android won't unpack the libs.
+
+4. **v3 signature scheme is correct** — `apksigner verify` shows v1 and v2 as false, which is expected. The app targets minSdk 28 (Android 9), so v3 is sufficient and correct.
+
+5. **Do not use `calc_signed.apk`** — that was an earlier attempt before the split-merge fix. Always use `calc_final.apk`.
+
+---
+
+## What Still Needs to Be Done
+
+### GitHub Actions — Split Merge (TODO)
+The workflow at `.github/workflows/build-signed-apk.yml` currently only handles the base APK. It needs to:
+1. Accept/include `split_config.arm64_v8a.apk` and `split_config.xhdpi.apk` in `apks/` folder (already placed there)
+2. Decompile all 3 APKs
+3. Run the merge step (copy lib and res from splits)
+4. Fix manifest (Python script to remove split attributes)
+5. Then rebuild + sign
+
+See `STEPS_DONE.md` for the exact commands needed.
+
+---
+
+## For the Next Agent — Quick Reference
+
+**To rebuild from current state (decompiled_app already modified):**
+```bash
+apktool b decompiled_app -o output/calc_merged_unsigned.apk --use-aapt2
+apksigner sign --ks signing/my-release-key.jks --ks-pass pass:'Sh@090609' --ks-key-alias my-key --key-pass pass:'Sh@090609' --out output/calc_final.apk --v1-signing-enabled true --v2-signing-enabled true --v3-signing-enabled true output/calc_merged_unsigned.apk
+apksigner verify --verbose output/calc_final.apk
+```
+
+**To verify the Calc overlay is in the smali:**
+```bash
+grep -c "Calc Premium Overlay" decompiled_app/smali/com/digitaltool/mobiletoolbox/smarttoolbox/MainActivity.smali
+# Should output: 2  (BEGIN comment + END comment)
+```
+
+**To verify manifest is fixed:**
+```bash
+grep -c "requiredSplitTypes" decompiled_app/AndroidManifest.xml
+# Should output: 0
+grep "extractNativeLibs" decompiled_app/AndroidManifest.xml
+# Should show: extractNativeLibs="true"
+```
