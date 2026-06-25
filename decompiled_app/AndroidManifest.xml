@@ -183,5 +183,5 @@
                 <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION"/>
             </intent-filter>
         </receiver>
-        <activity android:exported="false" android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" android:stateNotNeeded="true" android:theme="@style/Theme.PlayCore.Transparent"/>        <meta-data android:name="com.android.stamp.source" android:value="https://play.google.com/store"/>        <meta-data android:name="com.android.vending.splits" android:resource="@xml/splits0"/>    </application>
+        <activity android:exported="false" android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity" android:stateNotNeeded="true" android:theme="@style/Theme.PlayCore.Transparent"/>                    </application>
 </manifest>

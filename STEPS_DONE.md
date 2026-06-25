@@ -7,18 +7,18 @@
 ## Project Overview
 
 - **Original app:** Smart Toolbox (`com.digitaltool.mobiletoolbox.smarttoolbox`)
-- **What was done:** Decompiled APK → added "Calc" premium overlay → merged split APKs into one → signed with user's JKS
-- **Final output:** `output/calc_final.apk` — single installable APK, signed, verified ✅
+- **What was done:** Decompile → add "Calc" overlay → fix split APK → sign
+- **Final output:** `output/calc_final.apk` — single installable APK, signed ✅
 - **User's phone:** Android 16 (API 36)
 
 ---
 
-## File Structure (Important)
+## File Structure
 
 ```
 project/
 ├── attached_assets/
-│   ├── base_1782379525164.apk              ← original base APK
+│   ├── base_1782379525164.apk              ← original base APK (source of truth)
 │   ├── split_config.arm64_v8a_...apk       ← original ARM64 split
 │   └── split_config.xhdpi_...apk           ← original XHDPI split
 │
@@ -27,30 +27,25 @@ project/
 │   ├── split_config.arm64_v8a.apk
 │   └── split_config.xhdpi.apk
 │
-├── decompiled_app/                         ← MAIN working folder (base + merged splits)
-│   ├── AndroidManifest.xml                 ← MODIFIED (split refs removed)
-│   ├── apktool.yml
-│   ├── smali/com/digitaltool/.../MainActivity.smali  ← MODIFIED (Calc overlay injected)
-│   ├── res/                                ← merged with XHDPI resources
-│   ├── lib/arm64-v8a/                      ← merged from arm64 split (5 .so files)
-│   └── assets/
+├── decompiled_app/                         ← MAIN working folder (DO NOT DELETE)
+│   ├── AndroidManifest.xml                 ← MODIFIED — all split refs removed
+│   ├── smali/com/digitaltool/.../MainActivity.smali  ← MODIFIED — Calc overlay
+│   ├── lib/arm64-v8a/                      ← ARM64 .so files merged from split
+│   └── res/, assets/, apktool.yml ...
 │
 ├── decompiled_arm64/                       ← decompiled arm64 split (source only)
-├── decompiled_xhdpi/                       ← decompiled xhdpi split (source only)
+├── decompiled_xhdpi/                       ← decompiled xhdpi split (DO NOT MERGE)
 │
 ├── signing/
-│   ├── my-release-key.jks                  ← user's signing keystore
-│   └── keystore_b64.txt                    ← base64 of JKS (used in GitHub Actions)
+│   ├── my-release-key.jks                  ← user's keystore
+│   └── keystore_b64.txt                    ← base64 of JKS (for GitHub Actions)
 │
 ├── output/
-│   ├── calc_final.apk                      ← ✅ FINAL signed APK (download this)
-│   ├── calc_signed.apk                     ← old attempt (split issue, do not use)
-│   ├── calc_unsigned.apk                   ← intermediate
-│   └── calc_merged_unsigned.apk            ← intermediate
+│   └── calc_final.apk                      ← ✅ THE ONLY FILE NEEDED (64 MB)
 │
-├── .github/workflows/build-signed-apk.yml ← GitHub Actions workflow
+├── .github/workflows/build-signed-apk.yml
 ├── PROJECT_CONFIRMATION.md
-└── STEPS_DONE.md                           ← this file
+└── STEPS_DONE.md
 ```
 
 ---
@@ -67,22 +62,20 @@ project/
 
 ---
 
-## Step-by-Step (What Was Done)
+## Complete Steps (In Order)
 
----
-
-### STEP 1 — Installed Tools
-```bash
-# Via Nix system packages (code_execution tool)
+### STEP 1 — Install Tools
+```javascript
+// In code_execution tool:
 installSystemDependencies(["jdk17", "apktool", "android-tools", "apksigner"])
 ```
-- Java 17: `/nix/store/.../openjdk-17.0.15+6/bin/`
-- apktool: 2.11.1
-- apksigner: 35.0.6
+- Java 17 → `keytool`, `jarsigner` available
+- apktool 2.11.1
+- apksigner 35.0.6
 
 ---
 
-### STEP 2 — Decompiled All 3 APKs
+### STEP 2 — Decompile All 3 APKs
 ```bash
 apktool d attached_assets/base_1782379525164.apk -o decompiled_app --force
 apktool d attached_assets/split_config.arm64_v8a_...apk -o decompiled_arm64 --force
@@ -91,22 +84,20 @@ apktool d attached_assets/split_config.xhdpi_...apk -o decompiled_xhdpi --force
 
 ---
 
-### STEP 3 — Injected "Calc" Premium Overlay into MainActivity Smali
+### STEP 3 — Inject "Calc" Overlay Into MainActivity Smali
 
 **File:** `decompiled_app/smali/com/digitaltool/mobiletoolbox/smarttoolbox/MainActivity.smali`
 
-**Where:** Inside `onCreate` method (originally line 1525–1834), injected just before `return-void` (after the last `invoke-static` call to `Lc/d;->a(Lb/p;Ln3/d;)V`)
+**Where:** Inside `onCreate` method — inject just before the LAST `return-void`
+(After `invoke-static {p0, v0}, Lc/d;->a(Lb/p;Ln3/d;)V`)
 
-**What it does at runtime:**
-1. Gets `Window.getDecorView()` cast to `ViewGroup`
-2. Creates a `TextView` with text `" Calc "`
-3. White text (`0xFFFFFFFF`), 16sp, bold (`Typeface.DEFAULT_BOLD`)
-4. Gold background (`0xFFFFD700` = `-0x2900` in smali signed int)
-5. Padding: 20px horizontal, 8px vertical
-6. `FrameLayout.LayoutParams` with `Gravity.TOP | Gravity.END` (`0x800035`) → top-right corner
-7. Added to DecorView — sits on top of all Compose content always
+**What it does:**
+- Gets `DecorView` → cast to `ViewGroup`
+- Creates `TextView`: text=`" Calc "`, white text, 16sp bold, gold `#FFD700` background
+- Positions at top-right: `FrameLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.TOP|END)`
+- Adds to DecorView — always on top of all Compose content
 
-**Smali code injected:**
+**Smali code to inject:**
 ```smali
     # --- BEGIN: Calc Premium Overlay ---
     invoke-virtual {p0}, Landroid/app/Activity;->getWindow()Landroid/view/Window;
@@ -139,20 +130,19 @@ apktool d attached_assets/split_config.xhdpi_...apk -o decompiled_xhdpi --force
 ```
 
 **Notes:**
-- `.locals 10` in onCreate → v0–v9 available, code uses v0–v4 safely
-- App uses Jetpack Compose + `NoActionBar` theme — no XML toolbar exists
-- Overlay is added after `setContent{}` completes so it sits above Compose UI
+- `.locals 10` → v0–v9 available; code uses v0–v4 safely
+- Compose app with `NoActionBar` theme — no XML toolbar exists
+- `" Calc "` string and `FrameLayout$LayoutParams` are confirmed present in `classes.dex`
 
 ---
 
-### STEP 4 — Merged Split APKs Into Base
+### STEP 4 — Merge ARM64 Libs ONLY (NOT xhdpi resources)
 
-**Why needed:** The original APK was an App Bundle (split APK). Android requires ALL splits installed together. Without them it shows: *"App not installed as app isn't compatible with your phone"*
-
-**ARM64 libs merged:**
 ```bash
+mkdir -p decompiled_app/lib/arm64-v8a
 cp -r decompiled_arm64/lib/arm64-v8a/. decompiled_app/lib/arm64-v8a/
 ```
+
 Files copied (5 total):
 - `libandroidx.graphics.path.so`
 - `libbarhopper_v3.so`
@@ -160,43 +150,70 @@ Files copied (5 total):
 - `libimage_processing_util_jni.so`
 - `libsurface_util_jni.so`
 
-**XHDPI resources merged:**
-```bash
-cp -r decompiled_xhdpi/res/. decompiled_app/res/
-```
-Folders: `drawable-anydpi`, `drawable-ldrtl-xhdpi`, `drawable-xhdpi`, `values`, `values-hdpi`
+> ⚠️ **DO NOT copy from `decompiled_xhdpi/`** — merging xhdpi resources causes
+> aapt2 to reassign resource IDs → Firebase crashes on launch with
+> `Resources$NotFoundException: #0x7f120139`
 
 ---
 
-### STEP 5 — Fixed AndroidManifest.xml
+### STEP 5 — Fix AndroidManifest.xml
 
 **File:** `decompiled_app/AndroidManifest.xml`
 
-**Removed from `<manifest>` tag:**
-- `android:requiredSplitTypes="base__abi,base__density"`
-- `android:splitTypes=""`
+Use this exact Python script (regex must use `[^>]*` not `[^/]*`):
 
-**Changed in `<application>` tag:**
-- `android:extractNativeLibs="false"` → `android:extractNativeLibs="true"`
-  *(Required because we now embed native libs directly in the APK)*
+```python
+import re
 
-**Removed `<meta-data>` entries from `<application>`:**
-- `com.android.vending.splits.required` (value: `true`)
-- `com.android.vending.splits` (resource: `@xml/splits0`)
-- `com.android.stamp.source`
-- `com.android.stamp.type`
-- `com.android.vending.derived.apk.id`
+path = "decompiled_app/AndroidManifest.xml"
+with open(path, 'r') as f:
+    content = f.read()
+
+# Remove from <manifest> tag
+content = content.replace(' android:requiredSplitTypes="base__abi,base__density"', '')
+content = content.replace(' android:splitTypes=""', '')
+
+# Fix native lib extraction
+content = content.replace('android:extractNativeLibs="false"', 'android:extractNativeLibs="true"')
+
+# Remove split meta-data — USE [^>]* not [^/]* (values contain slashes)
+patterns = [
+    r'<meta-data android:name="com\.android\.vending\.splits\.required"[^>]*/>',
+    r'<meta-data android:name="com\.android\.vending\.splits"[^>]*/>',
+    r'<meta-data android:name="com\.android\.stamp\.source"[^>]*/>',
+    r'<meta-data android:name="com\.android\.stamp\.type"[^>]*/>',
+    r'<meta-data android:name="com\.android\.vending\.derived\.apk\.id"[^>]*/>',
+]
+for p in patterns:
+    content = re.sub(p, '', content)
+
+with open(path, 'w') as f:
+    f.write(content)
+```
+
+**What is removed/changed:**
+
+| Change | Why |
+|--------|-----|
+| `android:requiredSplitTypes` removed | Caused "App not compatible" on install |
+| `android:splitTypes=""` removed | Part of split APK marker |
+| `extractNativeLibs="false"` → `"true"` | Needed when `.so` files are embedded directly |
+| `com.android.vending.splits.required` removed | Tells Android this requires split APKs |
+| `com.android.vending.splits` removed | References splits0.xml — caused install block |
+| `com.android.stamp.source` removed | Play Store distribution stamp |
+| `com.android.stamp.type` removed | Play Store distribution stamp |
+| `com.android.vending.derived.apk.id` removed | Split APK identifier |
 
 ---
 
-### STEP 6 — Rebuilt APK
+### STEP 6 — Rebuild
 ```bash
 apktool b decompiled_app -o output/calc_merged_unsigned.apk --use-aapt2
 ```
 
 ---
 
-### STEP 7 — Signed APK
+### STEP 7 — Sign
 ```bash
 apksigner sign \
   --ks signing/my-release-key.jks \
@@ -212,91 +229,78 @@ apksigner sign \
 
 ---
 
-### STEP 8 — Verified
+### STEP 8 — Verify Everything
 ```bash
+# 1. Signature
 apksigner verify --verbose output/calc_final.apk
-```
-Result:
-```
-Verifies
-Verified using v3 scheme (APK Signature Scheme v3): true
-Number of signers: 1
+# Expected: "Verifies", "v3 scheme: true"
+
+# 2. No split attrs in manifest
+apktool d output/calc_final.apk -o verify_tmp --force
+grep -E "requiredSplit|vending\.splits|stamp\.source" verify_tmp/AndroidManifest.xml
+# Expected: NO OUTPUT (clean)
+
+# 3. extractNativeLibs is true
+grep "extractNativeLibs" verify_tmp/AndroidManifest.xml
+# Expected: extractNativeLibs="true"
+
+# 4. ARM64 libs present
+ls verify_tmp/lib/arm64-v8a/
+# Expected: 5 .so files
+
+# 5. Calc overlay in dex
+python3 -c "
+import zipfile
+with zipfile.ZipFile('output/calc_final.apk') as z:
+    dex = z.read('classes.dex')
+    print(' Calc  in dex:', b' Calc ' in dex)
+    print('FrameLayout LayoutParams in dex:', b'FrameLayout\$LayoutParams' in dex)
+"
+# Expected: both True
+
+rm -rf verify_tmp
 ```
 
 ---
 
-## Known Issues & Fixes
-
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| "App not compatible with phone" | Split APK — needed all 3 parts | Merge ARM64 libs into base + fix manifest (STEP 4+5) |
-| **App crashes on launch — `Resources$NotFoundException: #0x7f120139`** | Merging xhdpi split resources caused aapt2 to **reassign all resource IDs** — Firebase has the original IDs hardcoded in its dex | **⚠️ DO NOT merge xhdpi resources. Only copy ARM64 libs.** Base APK already has fallback drawables for all densities |
-| `apksigner` not found | Not in android-tools package | Installed separately: `installSystemDependencies(["apksigner"])` |
-| `zipalign` not available | Not in Nix packages | Not needed — apksigner handles modern signing without it |
-| v1/v2 schemes show `false` in verify | APK targets minSdk 28+ with v3 support | v3 scheme is sufficient for Android 9+ |
+### STEP 9 — Clean Up
+```bash
+rm -f output/calc_merged_unsigned.apk output/calc_final.apk.idsig
+# Only keep: output/calc_final.apk
+```
 
 ---
 
-## GitHub Actions Workflow
+## All Known Issues & Fixes
 
-**File:** `.github/workflows/build-signed-apk.yml`
-
-**Trigger:** Push to `main`/`master` or manual dispatch
-
-**Steps it does:**
-1. Java 17 setup
-2. Downloads apktool 2.11.1
-3. Installs apksigner via apt
-4. Decompiles `apks/base.apk`
-5. Python script patches the smali (adds Calc overlay) — skips if already patched
-6. Rebuilds APK with aapt2
-7. Decodes base64 JKS (hardcoded) → `signing/my-release-key.jks`
-8. Signs with `my-key` / `Sh@090609`
-9. Verifies signature
-10. Uploads as artifact `calc-signed-apk` (30-day retention)
-
-> ⚠️ **TODO for next agent:** The GitHub Actions workflow does NOT yet merge the split APKs. It needs to be updated to also decompile the arm64 and xhdpi splits, merge libs/res, and fix the manifest before rebuilding. See STEP 4+5 above for exact commands.
+| # | Error | Root Cause | Fix |
+|---|-------|-----------|-----|
+| 1 | `"App not installed as app isn't compatible with your phone"` | Original is a **split APK** — `requiredSplitTypes` in manifest forces all splits to be installed together | Remove `requiredSplitTypes`, `splitTypes`, and ALL split meta-data from manifest (STEP 5). Must use `[^>]*` in regex, NOT `[^/]*` — values contain slashes |
+| 2 | `"App not installed as app isn't compatible"` (still) | `com.android.vending.splits` meta-data was not removed — regex `[^/]*` stopped at `/` inside `@xml/splits0` value | Fix regex to use `[^>]*` instead of `[^/]*` so it matches the full element |
+| 3 | `FATAL: Resources$NotFoundException: Unable to find resource ID #0x7f120139` — Firebase crash on launch | Merging xhdpi split resources causes aapt2 to **reassign all resource IDs**; Firebase has original IDs hardcoded in dex | **Never merge xhdpi resources.** Base APK already has fallback drawables for all densities. Only merge ARM64 libs |
+| 4 | v1/v2 signature shows `false` in verify | App targets minSdk 28 (Android 9); v3 is the correct scheme | v3 alone is sufficient for Android 9–16 |
+| 5 | `apksigner` not found | Not in `android-tools` nix package | `installSystemDependencies(["apksigner"])` separately |
+| 6 | `zipalign` not available | Not in Nix packages | Not needed — apksigner v3 handles alignment |
 
 ---
 
-## How to Redo From Scratch (If Needed)
+## How to Redo From Scratch
 
 ```bash
-# 1. Install tools
-# (run in code_execution) installSystemDependencies(["jdk17","apktool","apksigner"])
+# 1. Install tools (in code_execution)
+installSystemDependencies(["jdk17","apktool","android-tools","apksigner"])
 
 # 2. Decompile
 apktool d attached_assets/base_1782379525164.apk -o decompiled_app --force
 apktool d attached_assets/split_config.arm64_v8a_...apk -o decompiled_arm64 --force
-apktool d attached_assets/split_config.xhdpi_...apk -o decompiled_xhdpi --force
 
-# 3. Merge libs and resources
+# 3. Copy ARM64 libs only (NEVER copy from decompiled_xhdpi)
 mkdir -p decompiled_app/lib/arm64-v8a
 cp -r decompiled_arm64/lib/arm64-v8a/. decompiled_app/lib/arm64-v8a/
-cp -r decompiled_xhdpi/res/. decompiled_app/res/
 
-# 4. Fix manifest (remove split attrs, change extractNativeLibs to true, remove split meta-data)
-# (use Python script — see STEP 5 above for details)
+# 4. Fix manifest (run the Python script from STEP 5 above)
 
-# 5. Inject Calc overlay into MainActivity.smali
-# (see STEP 3 smali code above — inject before return-void in onCreate)
+# 5. Inject Calc overlay (paste smali code from STEP 3 into MainActivity.smali)
 
-# 6. Rebuild
-mkdir -p output
-apktool b decompiled_app -o output/calc_merged_unsigned.apk --use-aapt2
-
-# 7. Sign
-apksigner sign \
-  --ks signing/my-release-key.jks \
-  --ks-pass pass:'Sh@090609' \
-  --ks-key-alias my-key \
-  --key-pass pass:'Sh@090609' \
-  --out output/calc_final.apk \
-  --v1-signing-enabled true \
-  --v2-signing-enabled true \
-  --v3-signing-enabled true \
-  output/calc_merged_unsigned.apk
-
-# 8. Verify
-apksigner verify --verbose output/calc_final.apk
+# 6. Build → Sign → Verify → Clean (see STEPS 6–9 above)
 ```
