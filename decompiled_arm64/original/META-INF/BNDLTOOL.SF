@@ -1,0 +1,26 @@
+Signature-Version: 1.0
+Created-By: 1.0 (Android)
+SHA1-Digest-Manifest: byyDrCiF0wGTvzjoq18tC+2BInE=
+X-Android-APK-Signed: 2, 3
+
+Name: AndroidManifest.xml
+SHA1-Digest: dSi6BvZPFNdcalK1xJJMUcPt+OA=
+
+Name: lib/arm64-v8a/libandroidx.graphics.path.so
+SHA1-Digest: qdPELWZ8G0EiUHhBZOMomwUjY54=
+
+Name: lib/arm64-v8a/libbarhopper_v3.so
+SHA1-Digest: gAoLm5xUQ6Blz4GSY+HtOCLqobI=
+
+Name: lib/arm64-v8a/libdatastore_shared_counter.so
+SHA1-Digest: eQTJ6+d3EwLgXs9+g9PxB2lV+mQ=
+
+Name: lib/arm64-v8a/libimage_processing_util_jni.so
+SHA1-Digest: FTVl6sKpmz1YsCd/jn47jvVIWk8=
+
+Name: lib/arm64-v8a/libsurface_util_jni.so
+SHA1-Digest: s5rdQCX3afW9kT2prSx3eJq92Aw=
+
+Name: stamp-cert-sha256
+SHA1-Digest: Bs40BvDZ1xrbgQrPTD2x5w/NfHQ=
+

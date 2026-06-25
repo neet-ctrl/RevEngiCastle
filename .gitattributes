@@ -1,0 +1,2 @@
+output/calc_final.apk filter=lfs diff=lfs merge=lfs -text
+output/calc_merged_unsigned.apk filter=lfs diff=lfs merge=lfs -text
