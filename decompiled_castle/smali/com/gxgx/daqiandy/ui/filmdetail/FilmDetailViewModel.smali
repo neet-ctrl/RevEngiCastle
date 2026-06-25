@@ -33090,7 +33090,10 @@
 .end method
 
 .method public final f5(JZ)V
-    .locals 12
+    .locals 0
+
+    # PATCH 16: stub getTrailerPlayUrl() - prevent titbit/trailer URL from replacing full episode stream
+    return-void
 
     .line 1
     iget-object v0, p0, Lcom/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel;->T:Lcom/gxgx/daqiandy/bean/MovieResult$MovieBean;

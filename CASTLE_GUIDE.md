@@ -67,10 +67,11 @@
 | 12 | 10-min dialog (isPreview paywall gate) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$m0.smali` | In `onStateComplete()`: `goto :goto_0` → `goto :cond_0` to force `isPreview=false` always |
 | 13 | Lock icon on player | `smali_classes2/com/gxgx/daqiandy/widgets/player/DetailPlayer.smali` | `isShowLockPbView()Z` → always returns `false` (no lock icon shown) |
 | 14 | Lock progress bar position | `smali_classes2/com/gxgx/daqiandy/widgets/player/DetailPlayer.smali` | `getLockPg()J` → always returns `0L` (lock bar at zero) |
-| 15 | **10-min playback stop (ROOT CAUSE)** | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `r6()Z` → always returns `false`, forcing full video URL path instead of trailer URL |
+| 15 | 10-min playback stop (r6 gate) | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `r6()Z` → always returns `false` (forces player into non-trailer mode in callbacks) |
+| 16 | **VIDEO/AUDIO FREEZE AT 10MIN (ROOT CAUSE)** | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `f5(JZ)V` → `return-void` immediately (stubs `getTrailerPlayUrl()` so trailer URL never replaces full episode stream) |
 
 ### Result:
-- **castle_final.apk** (53 MB) in `output/` — ready to install
+- **castle_final.apk** (55 MB) in `output/` — ready to install
 - Signed with v1 + v2 + v3 (all three verification schemes pass)
 - All VIP/premium content unlocked for all users (no login or subscription required for client-side checks)
 - 10-minute premium video playback restriction fully removed — videos now play the full stream without stopping
@@ -78,6 +79,13 @@
 - Seek position check always returns "not restricted" — full timeline scrubbing available
 - No lock icon, no lock progress bar, no paywall popup
 - NO manifest changes needed (Castle is a single APK, not split)
+
+### Why video/audio froze at 10min even after Patches 1–15 (IMPORTANT — Patch 16 fix):
+After all previous patches: no dialog, no lock icon, no timer pause — but Premium Exclusive, Premium First, and Premium Premiere videos would FREEZE video and audio at the 10-min mark while the timeline and subtitles kept running. Root cause:
+
+**The `f5(JZ)V` method (`getTrailerPlayUrl`)** — after the player starts playing the full episode, this method launches `j3` (a Kotlin coroutine). `j3.invokeSuspend()` calls `U(titbitId)` → `y5(titbitId)` → server API to fetch the "titbit" (trailer) stream URL. On success, the inner lambda `j3$a.invokeSuspend()` runs on the Main thread and calls `JzvdStd.setUp(trailerDataSource, ...)` — **directly replacing the player's URL with the titbit/trailer stream**. The server's titbit stream physically contains only ~10 minutes of content. When the trailer stream ends at 10min, video and audio have no more data → they freeze. But the player's timeline was initialized from the full episode metadata (e.g., 26:04) → timeline and subtitles keep running from their own timers, giving the illusion that the video "should" be playing.
+
+**Patch 16 fix**: Stub `f5(JZ)V` to `return-void` at the very top. The titbit URL is never fetched, `j3$a.setUp()` is never called, and the player keeps the full episode stream URL throughout. The full stream serves the complete episode past 10 minutes.
 
 ### Why the dialog still appeared after the first round of patches (IMPORTANT):
 The first 9 patches silenced the **CountDownTimer `onFinish()` paths** — preventing the timer expiry from directly calling any action. However, the "10-minute free trial has ended" dialog (`LimitShowVipDialogFragment`) has **three additional independent show paths** that were missed:
