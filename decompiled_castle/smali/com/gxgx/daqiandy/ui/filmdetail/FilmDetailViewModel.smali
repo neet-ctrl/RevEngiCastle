@@ -49889,7 +49889,7 @@
     .locals 1
 
     .line 1
-    iget-boolean v0, p0, Lcom/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel;->v:Z
+    const/4 v0, 0x0
 
     .line 2
     .line 3

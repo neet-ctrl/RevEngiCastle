@@ -14226,6 +14226,10 @@
 .method public getLockPg()J
     .locals 2
 
+    # PATCH: always return 0 — no lock position
+    const-wide/16 v0, 0x0
+    return-wide v0
+
     .line 1
     .line 2
     iget-wide v0, p0, Lcom/gxgx/daqiandy/widgets/player/DetailPlayer;->lockPg:J
@@ -15866,6 +15870,10 @@
 
 .method public isShowLockPbView()Z
     .locals 1
+
+    # PATCH: always return false — never show the lock icon
+    const/4 v0, 0x0
+    return v0
 
     .line 1
     .line 2

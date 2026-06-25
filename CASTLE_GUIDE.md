@@ -65,14 +65,18 @@
 | 10 | 10-min dialog (onStateComplete lambda) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$m0$f.smali` | `invokeSuspend()` → `goto :cond_0` immediately (skip `.show("LimitShowVipDialog")`) |
 | 11 | 10-min dialog (w() direct show) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$m0.smali` | `w(List,VideoContentActivity,Z,I)Unit` → return `Unit.INSTANCE` immediately |
 | 12 | 10-min dialog (isPreview paywall gate) | `smali/com/gxgx/daqiandy/ui/filmdetail/VideoContentActivity$m0.smali` | In `onStateComplete()`: `goto :goto_0` → `goto :cond_0` to force `isPreview=false` always |
+| 13 | Lock icon on player | `smali_classes2/com/gxgx/daqiandy/widgets/player/DetailPlayer.smali` | `isShowLockPbView()Z` → always returns `false` (no lock icon shown) |
+| 14 | Lock progress bar position | `smali_classes2/com/gxgx/daqiandy/widgets/player/DetailPlayer.smali` | `getLockPg()J` → always returns `0L` (lock bar at zero) |
+| 15 | **10-min playback stop (ROOT CAUSE)** | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `r6()Z` → always returns `false`, forcing full video URL path instead of trailer URL |
 
 ### Result:
-- **castle_patched.apk** (53 MB) in `output/` — ready to install
+- **castle_final.apk** (53 MB) in `output/` — ready to install
 - Signed with v1 + v2 + v3 (all three verification schemes pass)
 - All VIP/premium content unlocked for all users (no login or subscription required for client-side checks)
-- 10-minute premium video playback restriction fully removed — videos play without interruption
+- 10-minute premium video playback restriction fully removed — videos now play the full stream without stopping
 - Seeking past the 10-minute mark no longer shows the "Subscribe to Premium" dialog
 - Seek position check always returns "not restricted" — full timeline scrubbing available
+- No lock icon, no lock progress bar, no paywall popup
 - NO manifest changes needed (Castle is a single APK, not split)
 
 ### Why the dialog still appeared after the first round of patches (IMPORTANT):
@@ -1195,6 +1199,73 @@ file /tmp/mini_castle.apk   # Should say: "Android package (APK)..."
 
 ---
 
+### ERROR 15 — Video still stops/freezes at exactly 10 minutes (no popup, no lock icon)
+
+**When:** After patches 1–14, the VIP lock icon is gone ✅, the paywall popup is gone ✅, but the video still spins/buffers and stops dead at exactly the 10-minute mark ❌.
+
+**Cause — the real root cause (took 15 patches to find):**
+
+All previous patches (timers, dialogs, seek guards, lock bar, isPreview) killed the *symptoms* but not the *cause*. The actual enforcer was the app making two completely different API calls depending on VIP status:
+
+```
+r6() == TRUE  (non-VIP)  →  f5() → getTrailerPlayUrl  → server sends a SHORT TRAILER stream (ends at ~10 min)
+r6() == FALSE (VIP)      →  T6() → full video URL      → server sends the complete stream
+```
+
+The method `FilmDetailViewModel.r6()Z` reads a boolean field `v` — set to `true` for non-VIP users. When `true`, the app calls `f5()` which launches the `getTrailerPlayUrl$1$1` coroutine (`FilmDetailViewModel$j3$a`). That coroutine requests a *trailer* URL from the server — a separate stream that the server cuts off at ~10 minutes. The full video URL is never even requested. No client-side timer is involved — the stream just ends because the server-side trailer stream itself has no more data.
+
+This is why none of the `onFinish()` timer patches worked: there was no timer pausing the player — the video stream was genuinely ending.
+
+**How it was found:**
+
+The `FilmDetailViewModel$j3$a` class has a debug annotation:
+```
+c = "com.gxgx.daqiandy.ui.filmdetail.FilmDetailViewModel$getTrailerPlayUrl$1$1"
+```
+…and a log string inside:
+```
+"netState===getTrailerPlayUrl==="
+```
+This revealed the app was deliberately fetching a trailer URL, not the full video URL. Tracing back through `V3()` → field `o0` → caller `E9(Z)` → `VideoContentActivity$m0` → the branch point at `r6()Z`.
+
+**Fix — Patch 15:**
+
+File: `decompiled_castle/smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali`
+
+Find method `r6()Z`:
+```smali
+.method public final r6()Z
+    .locals 1
+
+    .line 1
+    iget-boolean v0, p0, Lcom/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel;->v:Z
+
+    .line 2
+    .line 3
+    return v0
+.end method
+```
+
+Change to:
+```smali
+.method public final r6()Z
+    .locals 1
+
+    .line 1
+    const/4 v0, 0x0
+
+    .line 2
+    .line 3
+    return v0
+.end method
+```
+
+**Why this works:** `r6()` always returns `false` = the app always takes the `T6()` full-video path, which requests the complete stream URL from the server — regardless of whether the account is VIP or not.
+
+**Key lesson:** When a video stops at EXACTLY a fixed time with no popup and no visible restriction UI, the most likely cause is a **server-side limited stream URL** (trailer/preview), not a client-side timer or dialog. Look for two-branch URL selection logic near the player setup code, not in timer callbacks.
+
+---
+
 ### ERROR 14 — The decompiled smali/ directory gets partially created then the process dies
 
 **When:** Running full `apktool d` on a large APK
@@ -1477,9 +1548,11 @@ invoke-static {p0, v0}, Lc/d;->a(Lb/p;Ln3/d;)V
 **Native libs:** arm64-v8a + armeabi-v7a (already in APK)  
 **VIP check class:** `rc/h.smali` → `C()Z` method  
 **User VIP bean:** `com/gxgx/base/bean/UserDetailMsgBean.smali` → `isVip()Z`, `isVipPremium()Z`  
-**Output:** `output/castle_patched.apk` (53 MB)  
+**Output:** `output/castle_final.apk` (53 MB)  
 **Signing:** v1 + v2 + v3 — all verified ✅  
-**10-min patch:** 4 × `onFinish()` timer stubs → `return-void` (VipFilmHelper×2, FilmDetailViewModel$b8, VideoContentActivity$k0)
+**Total patches:** 15  
+**10-min root cause:** `FilmDetailViewModel.r6()Z` → always `false` = app always requests full video stream URL (not trailer) — **Patch 15**  
+**Supporting patches:** 4 × `onFinish()` timer stubs (VipFilmHelper×2, FilmDetailViewModel$b8, VideoContentActivity$k0), seek dialog, isPreview gate, lock icon, lock bar, VIP dialog lambda
 
 **JKS:**
 - File: `signing/my-release-key.jks`
