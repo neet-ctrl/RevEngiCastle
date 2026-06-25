@@ -3887,7 +3887,7 @@
 .end method
 
 .method public static final w(Ljava/util/List;Lcom/gxgx/daqiandy/ui/filmdetail/VideoContentActivity;ZI)Lkotlin/Unit;
-    .locals 1
+    .locals 8
 
     # PATCH: never show LimitShowVipDialog from w() — return immediately
     sget-object v0, Lkotlin/Unit;->INSTANCE:Lkotlin/Unit;
