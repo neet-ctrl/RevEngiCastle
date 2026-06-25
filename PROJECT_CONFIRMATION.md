@@ -18,11 +18,30 @@ The user owns an Android app called **"Calc"** (package: `com.digitaltool.mobile
 | Inject "Calc" overlay in smali | ✅ Done | `MainActivity.smali` — confirmed in dex |
 | Merge ARM64 libs | ✅ Done | 5 `.so` files in `decompiled_app/lib/arm64-v8a/` |
 | Fix manifest (all split refs) | ✅ Done | All 7 split attributes/meta-data removed |
+| Unlock all premium features | ✅ Done | 3 smali patches — all users get full Pro access |
 | Rebuild APK | ✅ Done | `output/calc_final.apk` |
 | Sign APK | ✅ Done | v3 scheme, verified |
-| GitHub Actions workflow | ⚠️ Partial | Needs split-merge update — see below |
+| GitHub Actions workflow | ⚠️ Partial | Needs split-merge + premium patch update |
 
 **→ Final APK: `output/calc_final.apk` (64 MB) — download from Files panel**
+
+---
+
+## Premium Features Unlocked (All Free for All Users)
+
+These features were previously locked behind the "Smart Toolbox Pro" subscription (product IDs: `smart_toolbox_subscription` and `smart_toolbox_pro_lifetime`). All are now unlocked for every user with no purchase required:
+
+- ✅ Save & Export Results
+- ✅ Share Tools Outputs
+- ✅ Quick Access Favourites
+- ✅ All Color Themes
+- ✅ All App Backgrounds
+- ✅ Access Advanced Tools
+- ✅ Priority Support
+
+**How it works:** The app uses Android DataStore to persist a boolean flag `is_pro_user`. Three smali patches force this flag to always be `true` — at the read path, the write path, and the billing check. See `COMPLETE_GUIDE.md` → "HOW TO UNLOCK PREMIUM FEATURES" for the full methodology.
+
+**To verify it worked:** Install the APK → open Settings → the "Update to Pro" banner should be gone. All themes, backgrounds, and tool features should be fully accessible.
 
 ---
 

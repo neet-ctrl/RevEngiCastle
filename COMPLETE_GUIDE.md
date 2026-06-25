@@ -418,12 +418,352 @@ Never copy anything from `decompiled_xhdpi/`. The base APK already has fallback 
 
 ---
 
-## RESULT
+## RESULT (Calc Badge)
 
 - APK installed successfully on Android 16 ✅
 - App opens and runs normally ✅
 - Gold "Calc" badge visible at top-right corner of every screen ✅
 - Badge stays on top of everything — all screens, all tools ✅
+
+---
+
+## HOW TO UNLOCK PREMIUM FEATURES IN ANY ANDROID APP
+
+> This section documents exactly how we found and patched the premium/subscription check in the Smart Toolbox app. The same approach works on any Android app that uses Google Play Billing or a DataStore/SharedPreferences boolean flag for premium status.
+
+---
+
+### WHY THIS WORKS
+
+Android apps written in Kotlin/Compose store the user's subscription status as a **boolean flag** — either in:
+- **DataStore** (modern — most Kotlin apps)
+- **SharedPreferences** (older apps)
+- **A ViewModel field** read from Room database
+
+The Google Play Billing check runs, verifies purchase status, then WRITES `is_pro_user = true/false` to storage. Every screen then READS that flag to decide whether to show locked content or paywalls.
+
+By patching THREE points:
+1. The **READ** path (always returns true no matter what is stored)
+2. The **WRITE** path (always saves true no matter what billing returned)
+3. The **BILLING CHECK** itself (always takes the "subscribed" branch)
+
+...the app permanently sees the user as premium. Even if Play Billing reports "not subscribed", the patched code overrides it at every layer.
+
+---
+
+### STEP-BY-STEP: HOW WE FOUND THE PREMIUM CHECK
+
+#### Step A — Identify the Product IDs
+
+Search all smali files for billing-related strings:
+
+```bash
+grep -r "subscription\|premium\|pro\|billing\|purchase" decompiled_app/smali/ \
+  --include="*.smali" -l | head -20
+```
+
+Then look for the actual Play product ID string:
+```bash
+grep -r "smart_toolbox\|pro_lifetime\|subscribe\|annual" decompiled_app/smali/ \
+  --include="*.smali" -l
+```
+
+**What we found:** `li/w.smali` contained:
+- `"smart_toolbox_subscription"` — the annual subscription product ID
+- `"smart_toolbox_pro_lifetime"` — the lifetime purchase product ID
+
+These are the Google Play Billing product IDs the app checks against.
+
+---
+
+#### Step B — Find the Premium Storage Key
+
+Search for where the pro status is saved and read:
+
+```bash
+grep -r "is_pro\|isPro\|pro_user\|isProUser\|is_premium\|hasPro" \
+  decompiled_app/smali/ --include="*.smali" -l
+```
+
+Then grep for the actual string key name:
+```bash
+grep -rn "is_pro_user\|isPremium\|is_premium" decompiled_app/smali/ --include="*.smali"
+```
+
+**What we found:** `nb/m.smali` line 99 contained:
+```smali
+const-string v0, "is_pro_user"
+```
+This is the DataStore key name. It is stored in static field `nb/m;->e` (of type `Lh7/c;` — a DataStore preferences key).
+
+The key is created as a **boolean** key via `Lxl/n0;->a(Ljava/lang/String;)Lh7/c;` (the `a()` method = boolean key factory in this obfuscated app).
+
+---
+
+#### Step C — Find the DataStore READ Path
+
+Search for who uses `nb/m;->e`:
+```bash
+grep -rn "nb/m;->e" decompiled_app/smali/ --include="*.smali"
+```
+
+**What we found:** `af/u.smali` reads this key and returns a `Boolean` Flow to the UI. The critical code block was:
+
+```smali
+# If stored value is null → v4 stays 0 (false) → falls to cond_1b
+if-eqz p1, :cond_1b
+
+# If stored value exists → read its boolean value → store in v4
+invoke-virtual {p1}, Ljava/lang/Boolean;->booleanValue()Z
+move-result v4
+
+:cond_1b
+# Both paths land here — v4 is either 0 (false) or actual value
+invoke-static {v4}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+```
+
+**The patch:** Insert `const/4 v4, 0x1` right after the `:cond_1b` label, before `Boolean.valueOf(v4)`. This forces both the null-path and the false-path to always use `true`.
+
+---
+
+#### Step D — Find the DataStore WRITE Path
+
+Search for who writes to `nb/m;->e`:
+```bash
+grep -rn "nb/m;->e" decompiled_app/smali/ --include="*.smali"
+```
+
+**What we found:** `nb/q.smali` is a coroutine/suspend function that writes the pro-user flag. The critical write code was:
+
+```smali
+sget-object v0, Lnb/m;->e:Lh7/c;   ← get the "is_pro_user" DataStore key
+invoke-static {v2}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;  ← wrap v2 in Boolean
+move-result-object v2
+invoke-virtual {p1, v0, v2}, Lh7/a;->e(Lh7/c;Ljava/lang/Object;)V  ← write to DataStore
+```
+
+Here `v2` is `iget-boolean v2, p0, Lnb/q;->I:Z` — the boolean field from the coroutine state machine, which comes from what billing reported.
+
+**The patch:** Insert `const/4 v2, 0x1` before the `Boolean.valueOf(v2)` call. This forces the stored value to always be `true`, regardless of what billing reported.
+
+---
+
+#### Step E — Find and Patch the Billing Check
+
+Search for the product ID usage in the billing file:
+```bash
+grep -n "smart_toolbox_subscription\|contains\|cond_" decompiled_app/smali/li/w.smali | head -40
+```
+
+**What we found:** In `li/w.smali` around line 7695–7711:
+
+```smali
+const-string v6, "smart_toolbox_subscription"
+invoke-virtual {v5, v6}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z
+move-result v5
+# v5 = 1 if user has subscription, 0 if not
+
+if-eqz v5, :cond_67   ← if NOT subscribed, jump to non-pro path
+
+:cond_63              ← subscribed path (gets purchase token, calls pro-user setter)
+```
+
+**The patch:** Insert `const/4 v5, 0x1` before the `if-eqz` check. This forces `v5 = 1` so `if-eqz` never jumps to the non-pro path — execution always falls through to `:cond_63` (the subscribed path).
+
+---
+
+### THE 3 EXACT PATCHES APPLIED
+
+#### Patch 1 — `decompiled_app/smali/af/u.smali` (DataStore READ)
+
+Find this block:
+```smali
+    :cond_1b
+    invoke-static {v4}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+```
+
+Change to:
+```smali
+    :cond_1b
+    const/4 v4, 0x1
+    invoke-static {v4}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+```
+
+---
+
+#### Patch 2 — `decompiled_app/smali/nb/q.smali` (DataStore WRITE)
+
+Find this block (the write of `nb/m;->e`):
+```smali
+    sget-object v0, Lnb/m;->e:Lh7/c;
+
+    .line 22
+    .line 23
+    invoke-static {v2}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+```
+
+Change to:
+```smali
+    sget-object v0, Lnb/m;->e:Lh7/c;
+
+    .line 22
+    .line 23
+    const/4 v2, 0x1
+    invoke-static {v2}, Ljava/lang/Boolean;->valueOf(Z)Ljava/lang/Boolean;
+```
+
+---
+
+#### Patch 3 — `decompiled_app/smali/li/w.smali` (Billing Check)
+
+Find this block:
+```smali
+    move-result v5
+
+    .line 2317
+    if-eqz v5, :cond_67
+```
+
+Change to:
+```smali
+    move-result v5
+
+    .line 2317
+    const/4 v5, 0x1
+    if-eqz v5, :cond_67
+```
+
+---
+
+### HOW TO DO THE SAME FOR ANY OTHER APP
+
+Follow this exact process for ANY app that has premium/subscription locking:
+
+---
+
+#### PHASE 1 — Find the product ID (what Play Billing checks for)
+
+```bash
+grep -r "subscription\|lifetime\|premium\|pro" decompiled_app/smali/ \
+  --include="*.smali" | grep "const-string" | grep -v "Log\|TAG\|Error"
+```
+
+Look for strings that look like Play product IDs (e.g. `"app_name_pro"`, `"annual_subscription"`, `"premium_lifetime"`).
+
+---
+
+#### PHASE 2 — Find the storage key name (what gets saved to DataStore or SharedPreferences)
+
+```bash
+grep -rn "is_pro\|isPro\|is_premium\|premium\|subscribed\|hasPro" \
+  decompiled_app/smali/ --include="*.smali"
+```
+
+The storage key is almost always a `const-string` near a call to a key factory method like:
+- `DataStore`: `Lxl/n0;->a(...)` or `Lxl/n0;->b(...)` or `Lxl/n0;->c(...)`
+- `SharedPreferences`: `Landroid/content/SharedPreferences;->getBoolean(...)`
+
+Note the **static field** it gets stored in (e.g. `nb/m;->e`).
+
+---
+
+#### PHASE 3 — Find who reads that field (the READ path)
+
+```bash
+grep -rn "CLASSNAME;->FIELDNAME" decompiled_app/smali/ --include="*.smali"
+```
+
+Replace `CLASSNAME;->FIELDNAME` with the actual static field you found in Phase 2.
+
+Look for the file that calls `Boolean;->booleanValue()Z` or `getBoolean()` near that field — that is your read path.
+
+Find the label where both the null-path and false-path converge, and insert `const/4 REGISTER, 0x1` right after that label.
+
+---
+
+#### PHASE 4 — Find who writes that field (the WRITE path)
+
+Same grep as Phase 3. Look for the file where `Boolean;->valueOf(Z)` is called near `sget-object` of your field. The register passed to `valueOf()` is the one that holds the billing result — force it to `0x1` before the call.
+
+---
+
+#### PHASE 5 — Patch the billing check itself
+
+In the file containing the product ID strings (Phase 1), find the `contains()` call:
+```bash
+grep -n "contains\|ArrayList\|if-eqz\|if-nez" decompiled_app/smali/li/w.smali | head -40
+```
+
+Find the pattern:
+```smali
+invoke-virtual {...}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z
+move-result vX
+if-eqz vX, :non_pro_label
+```
+
+Insert `const/4 vX, 0x1` before the `if-eqz` line to force the "subscribed" path.
+
+---
+
+#### PHASE 6 — Rebuild and Sign
+
+Always rebuild after patching:
+```bash
+apktool b decompiled_app -o output/app_unsigned.apk --use-aapt2
+
+apksigner sign \
+  --ks signing/my-release-key.jks \
+  --ks-pass pass:'Sh@090609' \
+  --ks-key-alias my-key \
+  --key-pass pass:'Sh@090609' \
+  --out output/calc_final.apk \
+  --v1-signing-enabled true \
+  --v2-signing-enabled true \
+  --v3-signing-enabled true \
+  output/app_unsigned.apk
+
+rm -f output/app_unsigned.apk output/calc_final.apk.idsig
+```
+
+---
+
+### VERIFICATION — HOW TO CONFIRM PREMIUM IS UNLOCKED
+
+After installing the patched APK:
+
+1. **Settings screen** — "Update to Pro" / "Upgrade" banner should be GONE
+2. **Themes** — All color themes selectable, no lock icons
+3. **Backgrounds** — All backgrounds accessible
+4. **Favourites tab** — Can add tools without paywall popup
+5. **Save/Export** — Works without asking to subscribe
+
+If the paywall STILL appears after installing:
+- Uninstall the old version of the app first (old DataStore cache has `is_pro_user = false`)
+- Then install fresh — the new DataStore will always read `true` from the first launch
+
+---
+
+### KEY THINGS THAT ARE DIFFERENT IN EVERY APP
+
+| Thing | How to Find It | Notes |
+|-------|---------------|-------|
+| DataStore/SharedPreferences key | grep for "isPro", "premium", "subscribed" in smali | It's always a `const-string` |
+| Which static field holds the key | See the `sput-object` after the key factory call | Format: `Lclass/name;->field:Ltype;` |
+| Which smali file reads it | grep for the static field name | Look for `Boolean;->booleanValue()Z` nearby |
+| Which smali file writes it | grep for the static field name | Look for `Boolean;->valueOf(Z)` nearby |
+| Which smali file has billing | grep for the product ID string | Look for `ArrayList;->contains()` nearby |
+| Register to force true | Whichever register is in the `valueOf(Z)` or `if-eqz` call | Always use `const/4 REGISTER, 0x1` |
+
+---
+
+## RESULT (Premium Unlock)
+
+- All premium features unlocked for all users ✅
+- No "Update to Pro" paywall shown ✅
+- All color themes accessible ✅
+- All app backgrounds accessible ✅
+- Favourites, Save/Export, Share all work ✅
+- No subscription purchase required ✅
 
 ---
 
