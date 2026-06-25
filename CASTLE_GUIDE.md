@@ -854,7 +854,94 @@ await installSystemDependencies(["apksigner"]);
 
 ---
 
-### ERROR 9 — APK installs but crashes on launch (VIP patch broke something)
+### ERROR 9 — APK crashes immediately on launch: `IllegalStateException` at `AppSync.b()`
+
+**When:** App installed fine but crashes before showing any UI — logcat shows:
+```
+java.lang.RuntimeException: Unable to get provider com.gxgx.daqiandy.app.AppStateProvider: java.lang.IllegalStateException
+    at com.gxgx.daqiandy.app.AppSync.b(AppSync.java:52)
+    at com.gxgx.daqiandy.app.AppStateProvider.onCreate(AppStateProvider.java:16)
+```
+
+**Cause:** The app has an **anti-tampering / signature integrity check** that runs in a `ContentProvider` during app startup (before any Activity is shown). The flow is:
+1. `AppStateProvider.onCreate()` calls `AppSync.a(context)` which:
+   - Checks if the installed package's signature matches a hardcoded expected signature
+   - Verifies integrity of certain APK entries
+   - Returns `null` if ANY check fails
+2. If the result is `null`, it calls `AppSync.b(null)`
+3. `AppSync.b(Throwable)` — since `null` is neither a `RuntimeException` nor an `Error`, it falls through to the default case and throws `new IllegalStateException()` — this is the crash
+
+Since we replaced the signature with our own JKS, the signature check fails → `a()` returns `null` → `b(null)` → crash.
+
+**Where:** `AppSync` class is in **`classes13.dex`** (NOT `classes.dex`).
+
+**Fix:** Find `AppSync.smali` in classes13.dex, patch `b(Throwable)V` to return-void instead of throwing:
+
+```bash
+# 1. Extract and decompile classes13.dex
+python3 -c "
+import zipfile
+z = zipfile.ZipFile('attached_assets/Castle_1782386369835.apk')
+data = z.read('classes13.dex')
+manifest = z.read('AndroidManifest.xml')
+with zipfile.ZipFile('/tmp/mini_c13b.apk', 'w', zipfile.ZIP_STORED) as out:
+    out.writestr('classes.dex', data)   # rename to classes.dex so apktool reads it
+    out.writestr('AndroidManifest.xml', manifest)
+"
+JAVA_TOOL_OPTIONS="-Xmx1g" apktool d /tmp/mini_c13b.apk -o /tmp/smali_c13b --no-res --force
+```
+
+```
+# File: /tmp/smali_c13b/smali/com/gxgx/daqiandy/app/AppSync.smali
+# Find this method:
+```
+
+```smali
+.method static b(Ljava/lang/Throwable;)V
+    .locals 1
+
+    .line 46
+    instance-of v0, p0, Ljava/lang/RuntimeException;
+```
+
+```
+# Change to:
+```
+
+```smali
+.method static b(Ljava/lang/Throwable;)V
+    .locals 0
+
+    # PATCH: bypass integrity/signature check — never throw
+    return-void
+
+    .line 46
+    instance-of v0, p0, Ljava/lang/RuntimeException;
+```
+
+```bash
+# 2. Copy patched smali as smali_classes13 and remove raw classes13.dex
+cp -r /tmp/smali_c13b/smali decompiled_castle/smali_classes13
+rm decompiled_castle/classes13.dex
+
+# 3. Rebuild and sign (same commands as Steps 10–11)
+JAVA_TOOL_OPTIONS="-Xmx1g" apktool b decompiled_castle -o output/castle_unsigned.apk --use-aapt2
+apksigner sign --ks signing/my-release-key.jks --ks-pass pass:'Sh@090609' \
+  --ks-key-alias my-key --key-pass pass:'Sh@090609' \
+  --out output/castle_final.apk --v1-signing-enabled true --v2-signing-enabled true \
+  --v3-signing-enabled true output/castle_unsigned.apk
+rm -f output/castle_unsigned.apk output/castle_final.apk.idsig
+```
+
+**Key facts:**
+- apktool naming: classes.dex → `smali/`, classes13.dex → `smali_classes13/`
+- When you put the decompiled smali in `smali_classes13/` AND delete `classes13.dex`, apktool recompiles from smali
+- The mini APK trick (rename classes13.dex → classes.dex) is needed so apktool can decompile it as `smali/` (which we then rename)
+- `.locals 0` is correct because after `return-void` no registers are used
+
+---
+
+### ERROR 10 — APK installs but crashes on launch (VIP patch broke something)
 
 **When:** After applying VIP patches, app crashes immediately
 
