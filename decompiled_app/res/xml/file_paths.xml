@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <cache-path name="shared_images" path="images/" />
+    <files-path name="my_images" path="EditedImages/" />
+    <external-path name="external_files" path="." />
+    <files-path name="camera_photos" path="." />
+    <external-path name="my_images" path="Android/data/com.packagename.app/files/Pictures" />
+    <external-path name="external" path="." />
+    <external-files-path name="external_files" path="." />
+    <cache-path name="cache" path="." />
+    <external-cache-path name="external_cache" path="." />
+    <files-path name="files" path="." />
+    <files-path name="mp4tomp3" path="mp4tomp3/Music" />
+    <files-path name="mp3tomp4" path="mp3tomp4/Movies" />
+    <cache-path name="shared_images" path="." />
+    <files-path name="internal_files" path="." />
+    <cache-path name="cached_files" path="." />
+    <external-path name="external_files" path="." />
+</paths>

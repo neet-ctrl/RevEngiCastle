@@ -1,0 +1,145 @@
+.class public final enum Lhw/a;
+.super Ljava/lang/Enum;
+.source "r8-map-id-9294c4d3bcc100a5d7a3e6fd8b775cbd596483727cf363d743cf505c5bebd399"
+
+
+# static fields
+.field public static final enum C:Lhw/a;
+
+.field public static final enum D:Lhw/a;
+
+.field public static final enum E:Lhw/a;
+
+.field public static final synthetic F:[Lhw/a;
+
+
+# direct methods
+.method static constructor <clinit>()V
+    .locals 5
+
+    .line 1
+    new-instance v0, Lhw/a;
+
+    .line 2
+    .line 3
+    const-string v1, "SUSPEND"
+
+    .line 4
+    .line 5
+    const/4 v2, 0x0
+
+    .line 6
+    invoke-direct {v0, v1, v2}, Ljava/lang/Enum;-><init>(Ljava/lang/String;I)V
+
+    .line 7
+    .line 8
+    .line 9
+    sput-object v0, Lhw/a;->C:Lhw/a;
+
+    .line 10
+    .line 11
+    new-instance v1, Lhw/a;
+
+    .line 12
+    .line 13
+    const-string v2, "DROP_OLDEST"
+
+    .line 14
+    .line 15
+    const/4 v3, 0x1
+
+    .line 16
+    invoke-direct {v1, v2, v3}, Ljava/lang/Enum;-><init>(Ljava/lang/String;I)V
+
+    .line 17
+    .line 18
+    .line 19
+    sput-object v1, Lhw/a;->D:Lhw/a;
+
+    .line 20
+    .line 21
+    new-instance v2, Lhw/a;
+
+    .line 22
+    .line 23
+    const-string v3, "DROP_LATEST"
+
+    .line 24
+    .line 25
+    const/4 v4, 0x2
+
+    .line 26
+    invoke-direct {v2, v3, v4}, Ljava/lang/Enum;-><init>(Ljava/lang/String;I)V
+
+    .line 27
+    .line 28
+    .line 29
+    sput-object v2, Lhw/a;->E:Lhw/a;
+
+    .line 30
+    .line 31
+    filled-new-array {v0, v1, v2}, [Lhw/a;
+
+    .line 32
+    .line 33
+    .line 34
+    move-result-object v0
+
+    .line 35
+    sput-object v0, Lhw/a;->F:[Lhw/a;
+
+    .line 36
+    .line 37
+    invoke-static {v0}, Lwl/j;->b([Ljava/lang/Enum;)Ldt/b;
+
+    .line 38
+    .line 39
+    .line 40
+    return-void
+.end method
+
+.method public static valueOf(Ljava/lang/String;)Lhw/a;
+    .locals 1
+
+    .line 1
+    const-class v0, Lhw/a;
+
+    .line 2
+    .line 3
+    invoke-static {v0, p0}, Ljava/lang/Enum;->valueOf(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object p0
+
+    .line 7
+    check-cast p0, Lhw/a;
+
+    .line 8
+    .line 9
+    return-object p0
+.end method
+
+.method public static values()[Lhw/a;
+    .locals 1
+
+    .line 1
+    sget-object v0, Lhw/a;->F:[Lhw/a;
+
+    .line 2
+    .line 3
+    invoke-virtual {v0}, Ljava/lang/Object;->clone()Ljava/lang/Object;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    check-cast v0, [Lhw/a;
+
+    .line 8
+    .line 9
+    return-object v0
+.end method

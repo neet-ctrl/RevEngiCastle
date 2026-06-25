@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "9tatgEDwHJ40Y7MBQej4H"
+uri = "file://output/calc_signed_apk.tar.gz"
+type = "unspecified"
+title = "calc_signed.apk (compressed) — Extract and install on Android"

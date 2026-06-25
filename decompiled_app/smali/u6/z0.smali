@@ -1,0 +1,23 @@
+.class public Lu6/z0;
+.super Lu6/y0;
+.source "r8-map-id-9294c4d3bcc100a5d7a3e6fd8b775cbd596483727cf363d743cf505c5bebd399"
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Lu6/y0;-><init>()V
+
+    return-void
+.end method
+
+.method public constructor <init>(Lu6/m1;)V
+    .locals 0
+
+    .line 2
+    invoke-direct {p0, p1}, Lu6/y0;-><init>(Lu6/m1;)V
+
+    return-void
+.end method

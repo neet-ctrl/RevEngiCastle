@@ -1,0 +1,28 @@
+.class public final Ly8/a0;
+.super Landroid/database/Observable;
+.source "r8-map-id-9294c4d3bcc100a5d7a3e6fd8b775cbd596483727cf363d743cf505c5bebd399"
+
+
+# virtual methods
+.method public final a()Z
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Landroid/database/Observable;->mObservers:Ljava/util/ArrayList;
+
+    .line 2
+    .line 3
+    invoke-virtual {v0}, Ljava/util/ArrayList;->isEmpty()Z
+
+    .line 4
+    .line 5
+    .line 6
+    move-result v0
+
+    .line 7
+    xor-int/lit8 v0, v0, 0x1
+
+    .line 8
+    .line 9
+    return v0
+.end method

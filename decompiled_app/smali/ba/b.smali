@@ -1,0 +1,41 @@
+.class public abstract Lba/b;
+.super Ljava/lang/Object;
+.source "r8-map-id-9294c4d3bcc100a5d7a3e6fd8b775cbd596483727cf363d743cf505c5bebd399"
+
+
+# static fields
+.field public static final a:Ljava/lang/String;
+
+
+# direct methods
+.method static constructor <clinit>()V
+    .locals 2
+
+    .line 1
+    const-string v0, "BatteryChrgTracker"
+
+    .line 2
+    .line 3
+    invoke-static {v0}, Lv9/w;->f(Ljava/lang/String;)Ljava/lang/String;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    const-string v1, "tagWithPrefix(...)"
+
+    .line 8
+    .line 9
+    invoke-static {v0, v1}, Lmt/m;->e(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 10
+    .line 11
+    .line 12
+    sput-object v0, Lba/b;->a:Ljava/lang/String;
+
+    .line 13
+    .line 14
+    return-void
+.end method
