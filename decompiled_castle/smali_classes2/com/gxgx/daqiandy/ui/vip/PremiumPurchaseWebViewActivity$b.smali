@@ -1,0 +1,301 @@
+.class public final Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;
+.super Landroid/webkit/WebChromeClient;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x11
+    name = "b"
+.end annotation
+
+
+# instance fields
+.field public final synthetic a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+
+# direct methods
+.method public constructor <init>(Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;)V
+    .locals 0
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()V"
+        }
+    .end annotation
+
+    .line 1
+    .line 2
+    iput-object p1, p0, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;->a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-direct {p0}, Landroid/webkit/WebChromeClient;-><init>()V
+
+    .line 6
+    return-void
+.end method
+
+
+# virtual methods
+.method public onProgressChanged(Landroid/webkit/WebView;I)V
+    .locals 2
+    .param p1    # Landroid/webkit/WebView;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    .line 2
+    const-string v0, "view"
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 6
+    .line 7
+    const/16 v0, 0x64
+
+    .line 8
+    .line 9
+    if-lt p2, v0, :cond_0
+
+    .line 10
+    .line 11
+    iget-object v0, p0, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;->a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+    .line 12
+    .line 13
+    .line 14
+    invoke-virtual {v0}, Lcom/gxgx/base/base/BaseActivity;->getBinding()Landroidx/viewbinding/ViewBinding;
+
+    .line 15
+    move-result-object v0
+
+    .line 16
+    .line 17
+    check-cast v0, Lcom/gxgx/daqiandy/databinding/ActivityVipWebViewBinding;
+
+    .line 18
+    .line 19
+    iget-object v0, v0, Lcom/gxgx/daqiandy/databinding/ActivityVipWebViewBinding;->vipPb:Landroid/widget/ProgressBar;
+
+    .line 20
+    .line 21
+    if-eqz v0, :cond_2
+
+    .line 22
+    .line 23
+    const/16 v1, 0x8
+
+    .line 24
+    .line 25
+    .line 26
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 27
+    goto :goto_0
+
+    .line 28
+    .line 29
+    :cond_0
+    iget-object v0, p0, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;->a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+    .line 30
+    .line 31
+    .line 32
+    invoke-virtual {v0}, Lcom/gxgx/base/base/BaseActivity;->getBinding()Landroidx/viewbinding/ViewBinding;
+
+    .line 33
+    move-result-object v0
+
+    .line 34
+    .line 35
+    check-cast v0, Lcom/gxgx/daqiandy/databinding/ActivityVipWebViewBinding;
+
+    .line 36
+    .line 37
+    iget-object v0, v0, Lcom/gxgx/daqiandy/databinding/ActivityVipWebViewBinding;->vipPb:Landroid/widget/ProgressBar;
+
+    .line 38
+    .line 39
+    if-eqz v0, :cond_1
+
+    .line 40
+    const/4 v1, 0x0
+
+    .line 41
+    .line 42
+    .line 43
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 44
+    .line 45
+    :cond_1
+    iget-object v0, p0, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;->a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+    .line 46
+    .line 47
+    .line 48
+    invoke-virtual {v0}, Lcom/gxgx/base/base/BaseActivity;->getBinding()Landroidx/viewbinding/ViewBinding;
+
+    .line 49
+    move-result-object v0
+
+    .line 50
+    .line 51
+    check-cast v0, Lcom/gxgx/daqiandy/databinding/ActivityVipWebViewBinding;
+
+    .line 52
+    .line 53
+    iget-object v0, v0, Lcom/gxgx/daqiandy/databinding/ActivityVipWebViewBinding;->vipPb:Landroid/widget/ProgressBar;
+
+    .line 54
+    .line 55
+    if-eqz v0, :cond_2
+
+    .line 56
+    .line 57
+    .line 58
+    invoke-virtual {v0, p2}, Landroid/widget/ProgressBar;->setProgress(I)V
+
+    .line 59
+    .line 60
+    .line 61
+    :cond_2
+    :goto_0
+    invoke-super {p0, p1, p2}, Landroid/webkit/WebChromeClient;->onProgressChanged(Landroid/webkit/WebView;I)V
+
+    .line 62
+    return-void
+.end method
+
+.method public onReceivedTitle(Landroid/webkit/WebView;Ljava/lang/String;)V
+    .locals 1
+    .param p1    # Landroid/webkit/WebView;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+    .param p2    # Ljava/lang/String;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    .line 2
+    const-string v0, "view"
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 6
+    .line 7
+    const-string v0, "title"
+
+    .line 8
+    .line 9
+    .line 10
+    invoke-static {p2, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 11
+    .line 12
+    .line 13
+    invoke-super {p0, p1, p2}, Landroid/webkit/WebChromeClient;->onReceivedTitle(Landroid/webkit/WebView;Ljava/lang/String;)V
+
+    .line 14
+    return-void
+.end method
+
+.method public onShowFileChooser(Landroid/webkit/WebView;Landroid/webkit/ValueCallback;Landroid/webkit/WebChromeClient$FileChooserParams;)Z
+    .locals 0
+    .param p1    # Landroid/webkit/WebView;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+    .param p2    # Landroid/webkit/ValueCallback;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+    .param p3    # Landroid/webkit/WebChromeClient$FileChooserParams;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Landroid/webkit/WebView;",
+            "Landroid/webkit/ValueCallback<",
+            "[",
+            "Landroid/net/Uri;",
+            ">;",
+            "Landroid/webkit/WebChromeClient$FileChooserParams;",
+            ")Z"
+        }
+    .end annotation
+
+    .line 1
+    .line 2
+    iget-object p1, p0, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;->a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-virtual {p1}, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;->t1()Lcom/gxgx/daqiandy/ui/vip/VipWebViewViewModel;
+
+    .line 6
+    move-result-object p1
+
+    .line 7
+    .line 8
+    .line 9
+    invoke-virtual {p1, p2}, Lcom/gxgx/daqiandy/ui/vip/VipWebViewViewModel;->U0(Landroid/webkit/ValueCallback;)V
+
+    .line 10
+    .line 11
+    sget p1, Landroid/os/Build$VERSION;->SDK_INT:I
+
+    .line 12
+    .line 13
+    const/16 p2, 0x20
+
+    .line 14
+    .line 15
+    if-gt p1, p2, :cond_0
+
+    .line 16
+    .line 17
+    iget-object p1, p0, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;->a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+    .line 18
+    .line 19
+    .line 20
+    invoke-static {p1}, Lcom/gxgx/daqiandy/ui/vip/b2;->d(Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;)V
+
+    .line 21
+    goto :goto_0
+
+    .line 22
+    .line 23
+    :cond_0
+    iget-object p1, p0, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity$b;->a:Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;
+
+    .line 24
+    .line 25
+    .line 26
+    invoke-virtual {p1}, Lcom/gxgx/daqiandy/ui/vip/PremiumPurchaseWebViewActivity;->Q2()V
+
+    .line 27
+    :goto_0
+    const/4 p1, 0x1
+
+    .line 28
+    return p1
+.end method

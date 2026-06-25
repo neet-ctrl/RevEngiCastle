@@ -1,0 +1,95 @@
+.class public final Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment$b;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Lcom/gxgx/daqiandy/adapter/RecommendAdapter$b;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;->initListener()V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic a:Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;
+
+
+# direct methods
+.method public constructor <init>(Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;)V
+    .locals 0
+
+    .line 1
+    .line 2
+    iput-object p1, p0, Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment$b;->a:Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 6
+    return-void
+.end method
+
+
+# virtual methods
+.method public a(Lcom/gxgx/daqiandy/bean/BannerBean;)V
+    .locals 2
+
+    .line 1
+    .line 2
+    iget-object v0, p0, Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment$b;->a:Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-virtual {v0}, Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;->P()Lcom/gxgx/daqiandy/ui/recommend/RecommendViewModel;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    const/4 v1, 0x1
+
+    .line 8
+    .line 9
+    .line 10
+    invoke-virtual {v0, p1, v1}, Lcom/gxgx/daqiandy/ui/recommend/RecommendViewModel;->C0(Lcom/gxgx/daqiandy/bean/BannerBean;Z)V
+
+    .line 11
+    return-void
+.end method
+
+.method public click(Lcom/gxgx/daqiandy/bean/BannerBean;)V
+    .locals 2
+
+    .line 1
+    .line 2
+    iget-object v0, p0, Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment$b;->a:Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-virtual {v0}, Lcom/gxgx/daqiandy/ui/recommend/RecommendFragment;->P()Lcom/gxgx/daqiandy/ui/recommend/RecommendViewModel;
+
+    .line 6
+    move-result-object v0
+
+    .line 7
+    const/4 v1, 0x0
+
+    .line 8
+    .line 9
+    .line 10
+    invoke-virtual {v0, p1, v1}, Lcom/gxgx/daqiandy/ui/recommend/RecommendViewModel;->C0(Lcom/gxgx/daqiandy/bean/BannerBean;Z)V
+
+    .line 11
+    return-void
+.end method

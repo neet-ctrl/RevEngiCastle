@@ -26855,6 +26855,9 @@
 .method public final W5(Ljava/lang/CharSequence;JZ)V
     .locals 2
 
+    # PATCH: never show "10 minutes free watching" banner toast
+    return-void
+
     .line 1
     invoke-virtual {p0}, Lcom/gxgx/daqiandy/ui/filmdetail/helper/BasePlayerMvvmActivity;->O()Lcom/gxgx/daqiandy/widgets/player/NormalPlayer;
 

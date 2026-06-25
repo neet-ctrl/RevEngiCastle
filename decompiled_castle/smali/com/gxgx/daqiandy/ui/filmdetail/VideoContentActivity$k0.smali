@@ -190,6 +190,9 @@
 .method public onTick(JLjava/lang/String;JLjava/lang/Long;)V
     .locals 9
 
+    # PATCH: skip all timer-tick VIP logic — prevents auto-advance to next episode and subscribe overlay
+    return-void
+
     .line 1
     const/4 p6, 0x1
 
