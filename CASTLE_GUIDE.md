@@ -941,7 +941,77 @@ rm -f output/castle_unsigned.apk output/castle_final.apk.idsig
 
 ---
 
-### ERROR 10 — APK installs but crashes on launch (VIP patch broke something)
+### ERROR 10 — `VerifyError: register index out of range` on launch
+
+**When:** App was previously crashing with `IllegalStateException` (ERROR 9), that was fixed, but now crashes with:
+```
+java.lang.VerifyError: Verifier rejected class ac.m: void ac.m.a(android.app.Activity):
+[0xFFFFFFFF] register index out of range (2 >= 2)
+    at com.gxgx.daqiandy.ui.main.MainViewModel.q0(SourceFile:6)
+    at com.gxgx.daqiandy.ui.main.MainActivity.initData(SourceFile:255)
+```
+
+**Cause:** When we stubbed out ad-loader methods (`ac/m.smali → a(Activity)V` and `ac/d.smali → s(Activity)V`), we set `.locals 0` and inserted `return-void` at the top — but left ALL the original dead code below it. Android's Dalvik verifier checks **every instruction in a method, including unreachable/dead code**. The dead code references registers `v0`–`v12` which don't exist when `.locals 0`. The verifier rejects the entire class at class-load time, crashing before any UI appears.
+
+**Affected files:**
+- `decompiled_castle/smali/ac/m.smali` → method `a(Landroid/app/Activity;)V`
+- `decompiled_castle/smali/ac/d.smali` → method `s(Landroid/app/Activity;)V`
+
+**Fix:** Strip ALL dead code after `return-void` in the stubbed methods — leave only the minimal stub:
+
+```smali
+.method public final a(Landroid/app/Activity;)V
+    .locals 0
+    .param p1    # Landroid/app/Activity;
+        .annotation build Lorg/jetbrains/annotations/Nullable;
+        .end annotation
+    .end param
+
+    # PATCH: do not load any native ads
+    return-void
+.end method
+```
+
+Python script to do this safely (finds the method boundary and rewrites it):
+
+```python
+def strip_dead_code(filepath, method_sig, patch_comment):
+    with open(filepath, 'r') as f:
+        content = f.read()
+    parts = content.split(method_sig)
+    method_and_rest = parts[1]
+    end_idx = method_and_rest.index('.end method')
+    after_method = method_and_rest[end_idx + len('.end method'):]
+    clean_stub = (
+        '\n    .locals 0\n'
+        '    .param p1    # Landroid/app/Activity;\n'
+        '        .annotation build Lorg/jetbrains/annotations/Nullable;\n'
+        '        .end annotation\n'
+        '    .end param\n\n'
+        f'    # PATCH: {patch_comment}\n'
+        '    return-void\n'
+        '.end method'
+    )
+    with open(filepath, 'w') as f:
+        f.write(parts[0] + method_sig + clean_stub + after_method)
+
+strip_dead_code(
+    'decompiled_castle/smali/ac/m.smali',
+    '.method public final a(Landroid/app/Activity;)V',
+    'do not load any native ads'
+)
+strip_dead_code(
+    'decompiled_castle/smali/ac/d.smali',
+    '.method public final s(Landroid/app/Activity;)V',
+    'do not preload reward ads'
+)
+```
+
+**KEY RULE:** When stubbing any method with `return-void` + `.locals 0`, you MUST delete all dead code that follows. The Android verifier is not a flow-sensitive verifier — it checks every bytecode instruction regardless of reachability.
+
+---
+
+### ERROR 11 — APK installs but crashes on launch (VIP patch broke something)
 
 **When:** After applying VIP patches, app crashes immediately
 
@@ -954,7 +1024,7 @@ rm -f output/castle_unsigned.apk output/castle_final.apk.idsig
 
 ---
 
-### ERROR 10 — `zipalign` not available
+### ERROR 12 — `zipalign` not available
 
 **When:** Trying to zipalign before signing
 
@@ -964,7 +1034,7 @@ rm -f output/castle_unsigned.apk output/castle_final.apk.idsig
 
 ---
 
-### ERROR 11 — `apktool d /tmp/mini_castle.apk` fails with "No such file or directory"
+### ERROR 13 — `apktool d /tmp/mini_castle.apk` fails with "No such file or directory"
 
 **When:** Trying to decompile the mini APK
 
@@ -978,7 +1048,7 @@ file /tmp/mini_castle.apk   # Should say: "Android package (APK)..."
 
 ---
 
-### ERROR 12 — The decompiled smali/ directory gets partially created then the process dies
+### ERROR 14 — The decompiled smali/ directory gets partially created then the process dies
 
 **When:** Running full `apktool d` on a large APK
 

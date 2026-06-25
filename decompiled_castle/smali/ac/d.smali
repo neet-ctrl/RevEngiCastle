@@ -734,29 +734,6 @@
 
     # PATCH: do not preload reward ads
     return-void
-
-    .line 1
-    const-string v0, "AdmobRewardView ===preLoadRewardAd===start"
-
-    .line 2
-    .line 3
-    invoke-static {v0}, Lwb/v;->a(Ljava/lang/String;)V
-
-    .line 4
-    .line 5
-    .line 6
-    const/4 v0, 0x0
-
-    .line 7
-    const/4 v1, 0x2
-
-    .line 8
-    invoke-static {p0, p1, v0, v1, v0}, Lac/d;->r(Lac/d;Landroid/app/Activity;Ljava/lang/String;ILjava/lang/Object;)V
-
-    .line 9
-    .line 10
-    .line 11
-    return-void
 .end method
 
 .method public final t(Lcom/gxgx/daqiandy/bean/AdsMaxStateBean;)V
