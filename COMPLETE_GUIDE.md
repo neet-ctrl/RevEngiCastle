@@ -24,6 +24,72 @@ The user also gave us a signing keystore file:
 
 ---
 
+## YOUR JKS FILE — WHAT IT IS AND HOW WE USED IT
+
+### What is a JKS file?
+
+A `.jks` file is a **Java KeyStore** — it is like a digital identity card for your app. Every Android APK must be signed with a keystore before Android will install it. Think of it like a wax seal on a letter — it proves the APK came from you and has not been tampered with.
+
+Without signing, Android shows "App not installed" and refuses to install the APK.
+
+### Your keystore details
+
+| Detail | Value | What it means |
+|--------|-------|---------------|
+| File | `signing/my-release-key.jks` | The keystore file you provided |
+| Store Password | `Sh@090609` | Password to open the keystore file |
+| Alias | `my-key` | The name of your key inside the keystore |
+| Key Password | `Sh@090609` | Password for that specific key |
+| SHA-256 Fingerprint | `6D:4C:FC:17:85:C2:9D:97:16:3B:E7:FA:7F:28:73:3E:BF:75:00:02:59:71:E6:FA:70:DE:46:3B:98:2B:86:2B` | Unique identity of your key — proof it is yours |
+
+### How we used it
+
+After rebuilding the APK (Step 5), we ran this command to sign it using your JKS file:
+
+```bash
+apksigner sign \
+  --ks signing/my-release-key.jks \
+  --ks-pass pass:'Sh@090609' \
+  --ks-key-alias my-key \
+  --key-pass pass:'Sh@090609' \
+  --out output/calc_final.apk \
+  --v1-signing-enabled true \
+  --v2-signing-enabled true \
+  --v3-signing-enabled true \
+  output/calc_merged_unsigned.apk
+```
+
+- `--ks` → points to your JKS file
+- `--ks-pass` → your store password
+- `--ks-key-alias` → your key alias (`my-key`)
+- `--key-pass` → your key password
+- `--out` → the final signed APK file produced
+
+### What signing schemes (v1/v2/v3) mean
+
+We enabled all 3 signing schemes:
+- **v1 (JAR signing)** — old scheme, for very old Android versions
+- **v2 (APK Signature Scheme v2)** — for Android 7+
+- **v3 (APK Signature Scheme v3)** — for Android 9+ (this is the one that actually verified)
+
+When we ran `apksigner verify`, the result showed:
+```
+Verifies
+Verified using v3 scheme (APK Signature Scheme v3): true
+Number of signers: 1
+```
+This means the APK is correctly signed with your key and ready to install.
+
+### Why this matters for future APKs
+
+If you ever update the app and sign with a DIFFERENT keystore, Android will refuse to install it over the existing one (because the signature won't match). Always use **this same JKS file** (`my-release-key.jks`) and the same credentials for any future version of this app.
+
+Keep the JKS file safe — if it is lost, you cannot update the app.
+
+---
+
+---
+
 ## WHAT WE WANTED TO DO
 
 The app is called "Smart Toolbox" on Google Play. The user owns it and wanted to:
