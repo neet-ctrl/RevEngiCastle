@@ -1,0 +1,272 @@
+.class public Lij/l;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Lij/k;
+
+
+# annotations
+.annotation runtime Ljava/lang/Deprecated;
+.end annotation
+
+
+# instance fields
+.field public final a:Lij/m;
+
+
+# direct methods
+.method public constructor <init>(Lij/m;)V
+    .locals 0
+
+    .line 1
+    .line 2
+    .line 3
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 4
+    .line 5
+    iput-object p1, p0, Lij/l;->a:Lij/m;
+
+    .line 6
+    return-void
+.end method
+
+
+# virtual methods
+.method public a(Ljava/net/Socket;)Z
+    .locals 1
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/lang/IllegalArgumentException;
+        }
+    .end annotation
+
+    .line 1
+    .line 2
+    iget-object v0, p0, Lij/l;->a:Lij/m;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-interface {v0, p1}, Lij/m;->a(Ljava/net/Socket;)Z
+
+    .line 6
+    move-result p1
+
+    .line 7
+    return p1
+.end method
+
+.method public b()Lij/m;
+    .locals 1
+
+    .line 1
+    .line 2
+    iget-object v0, p0, Lij/l;->a:Lij/m;
+
+    .line 3
+    return-object v0
+.end method
+
+.method public d(Ljava/net/Socket;Ljava/net/InetSocketAddress;Ljava/net/InetSocketAddress;Lbk/i;)Ljava/net/Socket;
+    .locals 7
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/io/IOException;,
+            Ljava/net/UnknownHostException;,
+            Lorg/apache/http/conn/ConnectTimeoutException;
+        }
+    .end annotation
+
+    .line 1
+    .line 2
+    .line 3
+    invoke-virtual {p2}, Ljava/net/InetSocketAddress;->getHostName()Ljava/lang/String;
+
+    .line 4
+    move-result-object v2
+
+    .line 5
+    .line 6
+    .line 7
+    invoke-virtual {p2}, Ljava/net/InetSocketAddress;->getPort()I
+
+    .line 8
+    move-result v3
+
+    .line 9
+    .line 10
+    if-eqz p3, :cond_0
+
+    .line 11
+    .line 12
+    .line 13
+    invoke-virtual {p3}, Ljava/net/InetSocketAddress;->getAddress()Ljava/net/InetAddress;
+
+    .line 14
+    move-result-object p2
+
+    .line 15
+    .line 16
+    .line 17
+    invoke-virtual {p3}, Ljava/net/InetSocketAddress;->getPort()I
+
+    .line 18
+    move-result p3
+
+    .line 19
+    :goto_0
+    move-object v4, p2
+
+    .line 20
+    move v5, p3
+
+    .line 21
+    goto :goto_1
+
+    .line 22
+    :cond_0
+    const/4 p2, 0x0
+
+    .line 23
+    const/4 p3, 0x0
+
+    .line 24
+    goto :goto_0
+
+    .line 25
+    .line 26
+    :goto_1
+    iget-object v0, p0, Lij/l;->a:Lij/m;
+
+    .line 27
+    move-object v1, p1
+
+    .line 28
+    move-object v6, p4
+
+    .line 29
+    .line 30
+    .line 31
+    invoke-interface/range {v0 .. v6}, Lij/m;->k(Ljava/net/Socket;Ljava/lang/String;ILjava/net/InetAddress;ILbk/i;)Ljava/net/Socket;
+
+    .line 32
+    move-result-object p1
+
+    .line 33
+    return-object p1
+.end method
+
+.method public equals(Ljava/lang/Object;)Z
+    .locals 1
+
+    .line 1
+    .line 2
+    if-nez p1, :cond_0
+
+    .line 3
+    const/4 p1, 0x0
+
+    .line 4
+    return p1
+
+    .line 5
+    .line 6
+    :cond_0
+    if-ne p0, p1, :cond_1
+
+    .line 7
+    const/4 p1, 0x1
+
+    .line 8
+    return p1
+
+    .line 9
+    .line 10
+    :cond_1
+    instance-of v0, p1, Lij/l;
+
+    .line 11
+    .line 12
+    if-eqz v0, :cond_2
+
+    .line 13
+    .line 14
+    iget-object v0, p0, Lij/l;->a:Lij/m;
+
+    .line 15
+    .line 16
+    check-cast p1, Lij/l;
+
+    .line 17
+    .line 18
+    iget-object p1, p1, Lij/l;->a:Lij/m;
+
+    .line 19
+    .line 20
+    .line 21
+    :goto_0
+    invoke-virtual {v0, p1}, Ljava/lang/Object;->equals(Ljava/lang/Object;)Z
+
+    .line 22
+    move-result p1
+
+    .line 23
+    goto :goto_1
+
+    .line 24
+    .line 25
+    :cond_2
+    iget-object v0, p0, Lij/l;->a:Lij/m;
+
+    .line 26
+    goto :goto_0
+
+    .line 27
+    :goto_1
+    return p1
+.end method
+
+.method public g(Lbk/i;)Ljava/net/Socket;
+    .locals 0
+    .annotation system Ldalvik/annotation/Throws;
+        value = {
+            Ljava/io/IOException;
+        }
+    .end annotation
+
+    .line 1
+    .line 2
+    iget-object p1, p0, Lij/l;->a:Lij/m;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-interface {p1}, Lij/m;->e()Ljava/net/Socket;
+
+    .line 6
+    move-result-object p1
+
+    .line 7
+    return-object p1
+.end method
+
+.method public hashCode()I
+    .locals 1
+
+    .line 1
+    .line 2
+    iget-object v0, p0, Lij/l;->a:Lij/m;
+
+    .line 3
+    .line 4
+    .line 5
+    invoke-virtual {v0}, Ljava/lang/Object;->hashCode()I
+
+    .line 6
+    move-result v0
+
+    .line 7
+    return v0
+.end method

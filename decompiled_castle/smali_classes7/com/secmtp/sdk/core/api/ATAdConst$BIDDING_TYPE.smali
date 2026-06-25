@@ -1,0 +1,44 @@
+.class public Lcom/secmtp/sdk/core/api/ATAdConst$BIDDING_TYPE;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/secmtp/sdk/core/api/ATAdConst;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x9
+    name = "BIDDING_TYPE"
+.end annotation
+
+
+# static fields
+.field public static final BIDDING_LOSS_WITH_BIDDING_TIMEOUT:Ljava/lang/String; = "2"
+
+.field public static final BIDDING_LOSS_WITH_EXPIRE:Ljava/lang/String; = "5"
+
+.field public static final BIDDING_LOSS_WITH_LOW_FLOOR:Ljava/lang/String; = "104"
+
+.field public static final BIDDING_LOSS_WITH_LOW_PRICE_IN_HB:Ljava/lang/String; = "102"
+
+.field public static final BIDDING_LOSS_WITH_LOW_PRICE_IN_NORMAL:Ljava/lang/String; = "103"
+
+.field public static final BIDDING_WIN_SECOND_BIDDING_TYPE:I = 0x65
+
+.field public static final BIDDING_WIN_SECOND_NORMAL_TYPE:I = 0x64
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    .line 1
+    .line 2
+    .line 3
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 4
+    return-void
+.end method

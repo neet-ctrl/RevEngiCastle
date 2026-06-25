@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView android:background="@drawable/bg_272834_ft_rt_20" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="center_horizontal" android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent" android:minHeight="220.0dip">
+        <TextView android:textSize="12.0sp" android:textColor="@color/white" android:ellipsize="marquee" android:gravity="center" android:id="@id/payment_tip" android:background="@color/color_7B6C52" android:focusable="true" android:focusableInTouchMode="true" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:minHeight="24.0dip" android:singleLine="true" />
+        <TextView android:textSize="40.0sp" android:textColor="@color/white" android:id="@id/tv_price" android:visibility="gone" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="15.0dip" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@id/payment_recycler_view" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="15.0dip" />
+        <TextView android:textSize="12.0sp" android:textColor="@color/color_999999" android:gravity="start" android:id="@id/tip1" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_marginTop="12.0dip" android:text="@string/if_payment_fails" android:layout_marginStart="20.0dip" android:layout_marginEnd="20.0dip" />
+        <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/btn_premium_code" android:background="@drawable/bg_343643_r6" android:visibility="gone" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="18.0dip" android:layout_marginTop="12.0dip" android:layout_marginRight="18.0dip" android:minHeight="44.0dip" android:layout_marginHorizontal="18.0dip">
+            <ImageView android:layout_width="18.0dip" android:layout_height="12.0dip" android:src="@drawable/ic_india_flag" android:layout_marginStart="9.0dip" />
+            <TextView android:textSize="14.0sp" android:textColor="@color/color_FFE291" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/pay_in_india" android:layout_weight="1.0" android:layout_marginStart="6.0dip" />
+            <ImageView android:layout_width="8.0dip" android:layout_height="12.0dip" android:src="@drawable/paychannel_right" android:layout_marginEnd="12.0dip" />
+        </LinearLayout>
+        <TextView android:textSize="14.0sp" android:textColor="@color/white" android:gravity="start" android:id="@id/official_channel_text" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="20.0dip" android:text="@string/pay_directly_to_admin" android:layout_marginStart="12.0dip" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@id/official_channel_recycler_view" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="15.0dip" android:layout_marginBottom="15.0dip" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

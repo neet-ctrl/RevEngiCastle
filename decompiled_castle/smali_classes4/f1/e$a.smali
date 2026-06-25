@@ -1,0 +1,49 @@
+.class public Lf1/e$a;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Ljava/util/concurrent/Executor;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lf1/e;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x1
+    name = null
+.end annotation
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    .line 1
+    .line 2
+    .line 3
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 4
+    return-void
+.end method
+
+
+# virtual methods
+.method public execute(Ljava/lang/Runnable;)V
+    .locals 0
+    .param p1    # Ljava/lang/Runnable;
+        .annotation build Landroidx/annotation/NonNull;
+        .end annotation
+    .end param
+
+    .line 1
+    .line 2
+    .line 3
+    invoke-static {p1}, Lf1/n;->y(Ljava/lang/Runnable;)V
+
+    .line 4
+    return-void
+.end method

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:background="@color/shimmer_view_bg" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <View android:background="@color/shimmer_view_color" android:layout_width="wrap_content" android:layout_height="248.0dip" />
+    <View android:background="@color/shimmer_view_color" android:layout_width="fill_parent" android:layout_height="40.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="18.0dip" android:layout_marginRight="12.0dip" />
+    <View android:background="@color/shimmer_view_color" android:layout_width="107.0dip" android:layout_height="22.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="19.0dip" android:layout_marginRight="12.0dip" />
+    <View android:background="@color/shimmer_view_color" android:layout_width="169.0dip" android:layout_height="14.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="12.0dip" />
+    <View android:background="@color/shimmer_view_color" android:layout_width="fill_parent" android:layout_height="14.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="12.0dip" android:layout_marginRight="12.0dip" />
+    <View android:background="@color/shimmer_view_color" android:layout_width="fill_parent" android:layout_height="14.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="6.0dip" android:layout_marginRight="12.0dip" />
+    <View android:background="@color/shimmer_view_color" android:layout_width="146.0dip" android:layout_height="14.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="6.0dip" android:layout_marginRight="12.0dip" />
+    <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="25.0dip">
+        <View android:id="@id/v1" android:background="@color/shimmer_view_color" android:layout_width="44.0dip" android:layout_height="44.0dip" android:layout_marginStart="26.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/v2" app:layout_constraintHorizontal_bias="0.5" app:layout_constraintHorizontal_chainStyle="spread_inside" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+        <View android:id="@id/v2" android:background="@color/shimmer_view_color" android:layout_width="44.0dip" android:layout_height="44.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/v3" app:layout_constraintHorizontal_bias="0.5" app:layout_constraintStart_toEndOf="@id/v1" app:layout_constraintTop_toTopOf="parent" />
+        <View android:id="@id/v3" android:background="@color/shimmer_view_color" android:layout_width="44.0dip" android:layout_height="44.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toStartOf="@id/v4" app:layout_constraintHorizontal_bias="0.5" app:layout_constraintStart_toEndOf="@id/v2" app:layout_constraintTop_toTopOf="parent" />
+        <View android:id="@id/v4" android:background="@color/shimmer_view_color" android:layout_width="44.0dip" android:layout_height="44.0dip" android:layout_marginEnd="26.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintHorizontal_bias="0.5" app:layout_constraintStart_toEndOf="@id/v3" app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="41.0dip">
+        <View android:background="@drawable/shape_sk_cricle_bg" android:layout_width="88.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:layout_marginRight="12.0dip" />
+        <View android:background="@drawable/shape_sk_cricle_bg" android:layout_width="88.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:layout_marginRight="12.0dip" />
+        <View android:background="@drawable/shape_sk_cricle_bg" android:layout_width="88.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:layout_marginRight="12.0dip" />
+        <View android:background="@drawable/shape_sk_cricle_bg" android:layout_width="88.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:layout_marginRight="12.0dip" />
+        <View android:background="@drawable/shape_sk_cricle_bg" android:layout_width="88.0dip" android:layout_height="88.0dip" android:layout_marginLeft="10.0dip" android:layout_marginRight="12.0dip" />
+    </LinearLayout>
+    <View android:background="@color/shimmer_view_color" android:layout_width="146.0dip" android:layout_height="14.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="32.0dip" android:layout_marginRight="12.0dip" />
+    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <View android:background="@color/shimmer_view_color" android:layout_width="128.0dip" android:layout_height="72.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="32.0dip" />
+        <View android:background="@color/shimmer_view_color" android:layout_width="128.0dip" android:layout_height="72.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="32.0dip" />
+        <View android:background="@color/shimmer_view_color" android:layout_width="128.0dip" android:layout_height="72.0dip" android:layout_marginLeft="12.0dip" android:layout_marginTop="32.0dip" />
+    </LinearLayout>
+</LinearLayout>

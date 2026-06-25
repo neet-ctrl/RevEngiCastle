@@ -1,0 +1,27 @@
+.class public final Lwb/q0$a$a;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lwb/q0$a;
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = "a"
+.end annotation
+
+
+# direct methods
+.method public static a(Lwb/q0$a;I)V
+    .locals 0
+    .param p0    # Lwb/q0$a;
+        .annotation build Lorg/jetbrains/annotations/NotNull;
+        .end annotation
+    .end param
+
+    .line 1
+    return-void
+.end method

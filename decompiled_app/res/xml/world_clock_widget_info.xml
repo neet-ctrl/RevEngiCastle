@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<appwidget-provider android:minWidth="250.0dip" android:minHeight="70.0dip" android:updatePeriodMillis="1800000" android:initialLayout="@layout/new_widget_clock" android:configure="com.digitaltool.mobiletoolbox.smarttoolbox.clean.ui.screens.tools.general.worldclock.WorldClockWidgetConfigActivity" android:previewImage="@drawable/app_logo" android:resizeMode="horizontal|vertical" android:widgetCategory="home_screen"
-  xmlns:android="http://schemas.android.com/apk/res/android" />

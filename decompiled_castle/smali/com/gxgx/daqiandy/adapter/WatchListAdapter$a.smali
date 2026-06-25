@@ -1,0 +1,246 @@
+.class public final Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;
+.super Ljava/lang/Object;
+.source "SourceFile"
+
+# interfaces
+.implements Lrc/j;
+
+
+# annotations
+.annotation system Ldalvik/annotation/EnclosingMethod;
+    value = Lcom/gxgx/daqiandy/adapter/WatchListAdapter;->E0(Lcom/chad/library/adapter/base/viewholder/BaseViewHolder;Lcom/gxgx/daqiandy/bean/WatchListBean;)V
+.end annotation
+
+.annotation system Ldalvik/annotation/InnerClass;
+    accessFlags = 0x19
+    name = null
+.end annotation
+
+
+# instance fields
+.field public final synthetic a:J
+
+.field public final synthetic b:Lcom/chad/library/adapter/base/viewholder/BaseViewHolder;
+
+.field public final synthetic c:Landroidx/constraintlayout/widget/ConstraintLayout;
+
+.field public final synthetic d:Landroid/widget/TextView;
+
+.field public final synthetic e:Lcom/gxgx/daqiandy/adapter/WatchListAdapter;
+
+
+# direct methods
+.method public constructor <init>(JLcom/chad/library/adapter/base/viewholder/BaseViewHolder;Landroidx/constraintlayout/widget/ConstraintLayout;Landroid/widget/TextView;Lcom/gxgx/daqiandy/adapter/WatchListAdapter;)V
+    .locals 0
+
+    .line 1
+    iput-wide p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->a:J
+
+    .line 2
+    .line 3
+    iput-object p3, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->b:Lcom/chad/library/adapter/base/viewholder/BaseViewHolder;
+
+    .line 4
+    .line 5
+    iput-object p4, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->c:Landroidx/constraintlayout/widget/ConstraintLayout;
+
+    .line 6
+    .line 7
+    iput-object p5, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->d:Landroid/widget/TextView;
+
+    .line 8
+    .line 9
+    iput-object p6, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->e:Lcom/gxgx/daqiandy/adapter/WatchListAdapter;
+
+    .line 10
+    .line 11
+    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
+
+    .line 12
+    .line 13
+    .line 14
+    return-void
+.end method
+
+
+# virtual methods
+.method public onFinish()V
+    .locals 2
+
+    .line 1
+    iget-object v0, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->c:Landroidx/constraintlayout/widget/ConstraintLayout;
+
+    .line 2
+    .line 3
+    const/16 v1, 0x8
+
+    .line 4
+    .line 5
+    invoke-virtual {v0, v1}, Landroid/view/View;->setVisibility(I)V
+
+    .line 6
+    .line 7
+    .line 8
+    return-void
+.end method
+
+.method public onTick(JLjava/lang/String;JLjava/lang/Long;)V
+    .locals 0
+
+    .line 1
+    const-string p1, "timeConversion"
+
+    .line 2
+    .line 3
+    invoke-static {p3, p1}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
+
+    .line 4
+    .line 5
+    .line 6
+    iget-wide p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->a:J
+
+    .line 7
+    .line 8
+    cmp-long p1, p1, p4
+
+    .line 9
+    .line 10
+    if-eqz p1, :cond_0
+
+    .line 11
+    .line 12
+    return-void
+
+    .line 13
+    :cond_0
+    iget-object p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->b:Lcom/chad/library/adapter/base/viewholder/BaseViewHolder;
+
+    .line 14
+    .line 15
+    invoke-virtual {p1}, Landroidx/recyclerview/widget/RecyclerView$ViewHolder;->getAbsoluteAdapterPosition()I
+
+    .line 16
+    .line 17
+    .line 18
+    move-result p1
+
+    .line 19
+    if-gez p1, :cond_1
+
+    .line 20
+    .line 21
+    return-void
+
+    .line 22
+    :cond_1
+    iget-object p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->c:Landroidx/constraintlayout/widget/ConstraintLayout;
+
+    .line 23
+    .line 24
+    const/4 p2, 0x0
+
+    .line 25
+    invoke-virtual {p1, p2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 26
+    .line 27
+    .line 28
+    sget-object p1, Lrc/h;->o:Lrc/h$a;
+
+    .line 29
+    .line 30
+    invoke-virtual {p1}, Lrc/h$a;->a()Lrc/h;
+
+    .line 31
+    .line 32
+    .line 33
+    move-result-object p1
+
+    .line 34
+    invoke-virtual {p1}, Lrc/h;->C()Z
+
+    .line 35
+    .line 36
+    .line 37
+    move-result p1
+
+    .line 38
+    if-eqz p1, :cond_2
+
+    .line 39
+    .line 40
+    iget-object p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->d:Landroid/widget/TextView;
+
+    .line 41
+    .line 42
+    invoke-virtual {p1, p3}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+
+    .line 43
+    .line 44
+    .line 45
+    iget-object p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->d:Landroid/widget/TextView;
+
+    .line 46
+    .line 47
+    invoke-virtual {p1, p2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 48
+    .line 49
+    .line 50
+    iget-object p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->e:Lcom/gxgx/daqiandy/adapter/WatchListAdapter;
+
+    .line 51
+    .line 52
+    invoke-static {p1}, Lcom/gxgx/daqiandy/adapter/WatchListAdapter;->D0(Lcom/gxgx/daqiandy/adapter/WatchListAdapter;)Landroidx/collection/ArrayMap;
+
+    .line 53
+    .line 54
+    .line 55
+    move-result-object p1
+
+    .line 56
+    iget-object p2, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->b:Lcom/chad/library/adapter/base/viewholder/BaseViewHolder;
+
+    .line 57
+    .line 58
+    invoke-virtual {p2}, Landroidx/recyclerview/widget/RecyclerView$ViewHolder;->getAbsoluteAdapterPosition()I
+
+    .line 59
+    .line 60
+    .line 61
+    move-result p2
+
+    .line 62
+    invoke-static {p2}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
+
+    .line 63
+    .line 64
+    .line 65
+    move-result-object p2
+
+    .line 66
+    invoke-interface {p1, p2, p3}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 67
+    .line 68
+    .line 69
+    goto :goto_0
+
+    .line 70
+    :cond_2
+    iget-object p1, p0, Lcom/gxgx/daqiandy/adapter/WatchListAdapter$a;->d:Landroid/widget/TextView;
+
+    .line 71
+    .line 72
+    const/16 p2, 0x8
+
+    .line 73
+    .line 74
+    invoke-virtual {p1, p2}, Landroid/view/View;->setVisibility(I)V
+
+    .line 75
+    .line 76
+    .line 77
+    :goto_0
+    return-void
+.end method

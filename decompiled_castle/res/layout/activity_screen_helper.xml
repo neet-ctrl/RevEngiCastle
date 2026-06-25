@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView android:layout_width="fill_parent" android:layout_height="fill_parent" android:fillViewport="true" android:overScrollMode="never"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="fill_parent">
+        <include android:id="@id/title" layout="@layout/layout_title" />
+        <TextView android:textSize="15.0sp" android:textColor="@color/white" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="24.0dip" android:layout_marginTop="27.0dip" android:text="@string/screen_helper_tip" />
+        <TextView android:textSize="13.0sp" android:textColor="#ff92929b" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="24.0dip" android:layout_marginTop="5.0dip" android:layout_marginRight="24.0dip" android:text="@string/screen_helper_tip1" />
+        <androidx.constraintlayout.widget.ConstraintLayout android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="24.0dip" android:layout_marginTop="5.0dip" android:layout_marginRight="24.0dip">
+            <ImageView android:layout_width="fill_parent" android:layout_height="0.0dip" android:src="@mipmap/icon_screen_helper" app:layout_constraintDimensionRatio="328:182" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView android:textSize="15.0sp" android:textColor="@color/white" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="24.0dip" android:layout_marginTop="25.0dip" android:layout_marginRight="24.0dip" android:text="@string/screen_helper_tip2" />
+        <TextView android:textSize="13.0sp" android:textColor="#ff92929b" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="24.0dip" android:layout_marginTop="5.0dip" android:layout_marginRight="24.0dip" android:layout_marginBottom="10.0dip" android:text="@string/screen_helper_tip3" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

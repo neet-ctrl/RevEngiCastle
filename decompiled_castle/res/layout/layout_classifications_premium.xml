@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:descendantFocusability="blocksDescendants" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:id="@id/llClassificationMore" android:layout_width="fill_parent" android:layout_height="wrap_content" app:layout_constraintTop_toTopOf="parent">
+        <ImageView android:id="@id/vLabel" android:background="@drawable/ic_user_name_premium_vip" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="12.0dip" />
+        <TextView android:textSize="18.0sp" android:textColor="@color/color_F3CA79" android:id="@id/tvLabelTitle" android:layout_width="0.0dip" android:layout_height="wrap_content" android:text="@string/home_normal_classification" android:layout_weight="1.0" android:layout_marginStart="9.0dip" />
+        <ImageView android:id="@id/ivClassificationMore" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/ic_right_arrow_premium" android:paddingStart="14.0dip" android:paddingEnd="14.0dip" />
+    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView android:id="@id/rvClassification" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="12.0dip" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@id/llClassificationMore" />
+</androidx.constraintlayout.widget.ConstraintLayout>

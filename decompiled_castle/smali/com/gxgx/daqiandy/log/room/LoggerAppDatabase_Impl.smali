@@ -1,0 +1,344 @@
+.class public final Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;
+.super Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase;
+.source "SourceFile"
+
+
+# instance fields
+.field private volatile _loggerDao:Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+
+
+# direct methods
+.method public constructor <init>()V
+    .locals 0
+
+    .line 1
+    invoke-direct {p0}, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase;-><init>()V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+.method public static synthetic access$000(Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;Landroidx/sqlite/SQLiteConnection;)V
+    .locals 0
+
+    .line 1
+    invoke-virtual {p0, p1}, Landroidx/room/RoomDatabase;->internalInitInvalidationTracker(Landroidx/sqlite/SQLiteConnection;)V
+
+    .line 2
+    .line 3
+    .line 4
+    return-void
+.end method
+
+
+# virtual methods
+.method public clearAllTables()V
+    .locals 2
+
+    .line 1
+    const-string v0, "LoggerEntity"
+
+    .line 2
+    .line 3
+    filled-new-array {v0}, [Ljava/lang/String;
+
+    .line 4
+    .line 5
+    .line 6
+    move-result-object v0
+
+    .line 7
+    const/4 v1, 0x0
+
+    .line 8
+    invoke-super {p0, v1, v0}, Landroidx/room/RoomDatabase;->performClear(Z[Ljava/lang/String;)V
+
+    .line 9
+    .line 10
+    .line 11
+    return-void
+.end method
+
+.method public createInvalidationTracker()Landroidx/room/InvalidationTracker;
+    .locals 4
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    new-instance v0, Ljava/util/HashMap;
+
+    .line 2
+    .line 3
+    const/4 v1, 0x0
+
+    .line 4
+    invoke-direct {v0, v1}, Ljava/util/HashMap;-><init>(I)V
+
+    .line 5
+    .line 6
+    .line 7
+    new-instance v2, Ljava/util/HashMap;
+
+    .line 8
+    .line 9
+    invoke-direct {v2, v1}, Ljava/util/HashMap;-><init>(I)V
+
+    .line 10
+    .line 11
+    .line 12
+    new-instance v1, Landroidx/room/InvalidationTracker;
+
+    .line 13
+    .line 14
+    const-string v3, "LoggerEntity"
+
+    .line 15
+    .line 16
+    filled-new-array {v3}, [Ljava/lang/String;
+
+    .line 17
+    .line 18
+    .line 19
+    move-result-object v3
+
+    .line 20
+    invoke-direct {v1, p0, v0, v2, v3}, Landroidx/room/InvalidationTracker;-><init>(Landroidx/room/RoomDatabase;Ljava/util/Map;Ljava/util/Map;[Ljava/lang/String;)V
+
+    .line 21
+    .line 22
+    .line 23
+    return-object v1
+.end method
+
+.method public createOpenDelegate()Landroidx/room/RoomOpenDelegate;
+    .locals 4
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 2
+    new-instance v0, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl$a;
+
+    const-string v1, "ee88a4cdf0cf74aa8f91e3048599107a"
+
+    const-string v2, "b92d848f175c8a6053b0b95523f93eb9"
+
+    const/4 v3, 0x2
+
+    invoke-direct {v0, p0, v3, v1, v2}, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl$a;-><init>(Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;ILjava/lang/String;Ljava/lang/String;)V
+
+    return-object v0
+.end method
+
+.method public bridge synthetic createOpenDelegate()Landroidx/room/RoomOpenDelegateMarker;
+    .locals 1
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .line 1
+    invoke-virtual {p0}, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;->createOpenDelegate()Landroidx/room/RoomOpenDelegate;
+
+    move-result-object v0
+
+    return-object v0
+.end method
+
+.method public getAutoMigrations(Ljava/util/Map;)Ljava/util/List;
+    .locals 0
+    .param p1    # Ljava/util/Map;
+        .annotation build Landroidx/annotation/NonNull;
+        .end annotation
+    .end param
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .annotation system Ldalvik/annotation/MethodParameters;
+        accessFlags = {
+            0x10
+        }
+        names = {
+            "autoMigrationSpecs"
+        }
+    .end annotation
+
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "(",
+            "Ljava/util/Map<",
+            "Ljava/lang/Class<",
+            "+",
+            "Landroidx/room/migration/AutoMigrationSpec;",
+            ">;",
+            "Landroidx/room/migration/AutoMigrationSpec;",
+            ">;)",
+            "Ljava/util/List<",
+            "Landroidx/room/migration/Migration;",
+            ">;"
+        }
+    .end annotation
+
+    .line 1
+    new-instance p1, Ljava/util/ArrayList;
+
+    .line 2
+    .line 3
+    invoke-direct {p1}, Ljava/util/ArrayList;-><init>()V
+
+    .line 4
+    .line 5
+    .line 6
+    return-object p1
+.end method
+
+.method public getRequiredAutoMigrationSpecs()Ljava/util/Set;
+    .locals 1
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()",
+            "Ljava/util/Set<",
+            "Ljava/lang/Class<",
+            "+",
+            "Landroidx/room/migration/AutoMigrationSpec;",
+            ">;>;"
+        }
+    .end annotation
+
+    .line 1
+    new-instance v0, Ljava/util/HashSet;
+
+    .line 2
+    .line 3
+    invoke-direct {v0}, Ljava/util/HashSet;-><init>()V
+
+    .line 4
+    .line 5
+    .line 6
+    return-object v0
+.end method
+
+.method public getRequiredTypeConverters()Ljava/util/Map;
+    .locals 3
+    .annotation build Landroidx/annotation/NonNull;
+    .end annotation
+
+    .annotation system Ldalvik/annotation/Signature;
+        value = {
+            "()",
+            "Ljava/util/Map<",
+            "Ljava/lang/Class<",
+            "*>;",
+            "Ljava/util/List<",
+            "Ljava/lang/Class<",
+            "*>;>;>;"
+        }
+    .end annotation
+
+    .line 1
+    new-instance v0, Ljava/util/HashMap;
+
+    .line 2
+    .line 3
+    invoke-direct {v0}, Ljava/util/HashMap;-><init>()V
+
+    .line 4
+    .line 5
+    .line 6
+    const-class v1, Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+
+    .line 7
+    .line 8
+    invoke-static {}, Lqc/g;->h()Ljava/util/List;
+
+    .line 9
+    .line 10
+    .line 11
+    move-result-object v2
+
+    .line 12
+    invoke-interface {v0, v1, v2}, Ljava/util/Map;->put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+
+    .line 13
+    .line 14
+    .line 15
+    return-object v0
+.end method
+
+.method public loggerDao()Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+    .locals 1
+
+    .line 1
+    iget-object v0, p0, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;->_loggerDao:Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+
+    .line 2
+    .line 3
+    if-eqz v0, :cond_0
+
+    .line 4
+    .line 5
+    iget-object v0, p0, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;->_loggerDao:Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+
+    .line 6
+    .line 7
+    return-object v0
+
+    .line 8
+    :cond_0
+    monitor-enter p0
+
+    .line 9
+    :try_start_0
+    iget-object v0, p0, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;->_loggerDao:Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+
+    .line 10
+    .line 11
+    if-nez v0, :cond_1
+
+    .line 12
+    .line 13
+    new-instance v0, Lqc/g;
+
+    .line 14
+    .line 15
+    invoke-direct {v0, p0}, Lqc/g;-><init>(Landroidx/room/RoomDatabase;)V
+
+    .line 16
+    .line 17
+    .line 18
+    iput-object v0, p0, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;->_loggerDao:Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+
+    .line 19
+    .line 20
+    goto :goto_0
+
+    .line 21
+    :catchall_0
+    move-exception v0
+
+    .line 22
+    goto :goto_1
+
+    .line 23
+    :cond_1
+    :goto_0
+    iget-object v0, p0, Lcom/gxgx/daqiandy/log/room/LoggerAppDatabase_Impl;->_loggerDao:Lcom/gxgx/daqiandy/log/room/dao/LoggerDao;
+
+    .line 24
+    .line 25
+    monitor-exit p0
+
+    .line 26
+    return-object v0
+
+    .line 27
+    :goto_1
+    monitor-exit p0
+    :try_end_0
+    .catchall {:try_start_0 .. :try_end_0} :catchall_0
+
+    .line 28
+    throw v0
+.end method
