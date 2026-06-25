@@ -1057,6 +1057,86 @@ strip_bool_stub('decompiled_castle/smali/rc/h.smali', '.method public final C()Z
 
 ---
 
+### ERROR 12 — `VerifyError` in `VipFilmHelper$c$c$a.onFinish()` (10-min timer patch)
+
+**When:** App crashes after startup:
+```
+java.lang.VerifyError: Verifier rejected class com.gxgx.daqiandy.member.VipFilmHelper$c$c$a:
+void com.gxgx.daqiandy.member.VipFilmHelper$c$c$a.onFinish(): [0xFFFFFFFF] register index out of range (1 >= 1)
+    at com.gxgx.daqiandy.member.VipFilmHelper$c$c.invokeSuspend(SourceFile:21)
+```
+
+**Cause:** Same dead-code issue. The 10-minute timer `onFinish()` patches in `VipFilmHelper$c$c$a.smali` and `VipFilmHelper$c$b$a.smali` had `.locals 0` but the original dead code below used `v0`, `v1`, `v2` — register index 1 is out of range when only 0 locals are declared (leaving just `p0`=this at index 0).
+
+Additionally, `UserDetailMsgBean.smali`'s `isVip()Z` and `isVipPremium()Z` had the same problem (dead code referencing `v0`-`v2` with `.locals 1`, meaning v1+ were out of range).
+
+**Affected files (all needed fixing):**
+- `smali/com/gxgx/daqiandy/member/VipFilmHelper$c$c$a.smali` → `onFinish()V`
+- `smali/com/gxgx/daqiandy/member/VipFilmHelper$c$b$a.smali` → `onFinish()V`
+- `smali/com/gxgx/base/bean/UserDetailMsgBean.smali` → `isVip()Z`, `isVipPremium()Z`
+
+**Fix:** Strip dead code from all four methods (same technique as ERRORs 10/11).
+
+**CRITICAL LESSON — Run a full sweep after every rebuild:**
+
+After applying any patch with an early return, run this script across ALL patched smali files to catch every dead-code problem before testing on device:
+
+```python
+import re, os
+
+PATCH_FILES = [
+    'decompiled_castle/smali/ac/d.smali',
+    'decompiled_castle/smali/ac/m.smali',
+    'decompiled_castle/smali/com/gxgx/base/bean/UserDetailMsgBean.smali',
+    'decompiled_castle/smali/com/gxgx/daqiandy/member/VipFilmHelper$c$b$a.smali',
+    'decompiled_castle/smali/com/gxgx/daqiandy/member/VipFilmHelper$c$c$a.smali',
+    'decompiled_castle/smali/rc/h.smali',
+]
+
+issues = []
+for fpath in PATCH_FILES:
+    with open(fpath) as f:
+        content = f.read()
+    method_blocks = re.split(r'(?=\.method )', content)
+    for block in method_blocks:
+        if '# PATCH:' not in block:
+            continue
+        sig_match = re.match(r'\.method ([^\n]+)', block)
+        if not sig_match:
+            continue
+        sig = sig_match.group(1).strip()
+        end_pos = block.find('.end method')
+        patch_pos = block.find('# PATCH:')
+        after_patch = block[patch_pos:end_pos]
+        ret_match = re.search(r'\n\s+(return[^\n]*)\n', after_patch)
+        if not ret_match:
+            continue
+        between = block[patch_pos + ret_match.end():end_pos].strip()
+        fname = os.path.basename(fpath)
+        if between:
+            issues.append(f"{fname} → {sig}")
+            print(f"❌ DEAD CODE: {fname} → {sig}")
+        else:
+            print(f"✓  CLEAN: {fname} → {sig}")
+
+print("✅ All clean!" if not issues else f"❌ Fix these: {issues}")
+```
+
+**All 8 patched methods that are now confirmed clean:**
+
+| File | Method | Return |
+|------|--------|--------|
+| `ac/d.smali` | `s(Activity)V` | void |
+| `ac/m.smali` | `a(Activity)V` | void |
+| `UserDetailMsgBean.smali` | `isVip()Z` | true (0x1) |
+| `UserDetailMsgBean.smali` | `isVipPremium()Z` | true (0x1) |
+| `VipFilmHelper$c$b$a.smali` | `onFinish()V` | void |
+| `VipFilmHelper$c$c$a.smali` | `onFinish()V` | void |
+| `rc/h.smali` | `B()Z` | true (0x1) |
+| `rc/h.smali` | `C()Z` | false (0x0) |
+
+---
+
 ### ERROR 11 — APK installs but crashes on launch (VIP patch broke something)
 
 **When:** After applying VIP patches, app crashes immediately
