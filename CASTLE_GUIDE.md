@@ -1007,7 +1007,53 @@ strip_dead_code(
 )
 ```
 
-**KEY RULE:** When stubbing any method with `return-void` + `.locals 0`, you MUST delete all dead code that follows. The Android verifier is not a flow-sensitive verifier — it checks every bytecode instruction regardless of reachability.
+**KEY RULE:** When stubbing any method (boolean or void), you MUST delete all dead code that follows the early return. The Android verifier is not a flow-sensitive verifier — it checks every bytecode instruction regardless of reachability. This applies to ALL patched methods in ALL smali files.
+
+---
+
+### ERROR 11 — `VerifyError: register index out of range` on second launch (rc.h class)
+
+**When:** After fixing ERROR 10 (ac.m VerifyError), the app crashes again with:
+```
+java.lang.VerifyError: Verifier rejected class rc.h: boolean rc.h.B(): [0xFFFFFFFF] register index out of range (2 >= 2)
+ boolean rc.h.C(): [0xFFFFFFFF] register index out of range (2 >= 2)
+    at com.gxgx.daqiandy.app.c.T(SourceFile:14)
+    at com.gxgx.daqiandy.app.c$e0.invokeSuspend(SourceFile:141)
+```
+
+**Cause:** Identical to ERROR 10 but in a different class. `rc/h.smali` has two patched boolean methods — `B()Z` (VIP ad-hide check) and `C()Z` (isNoVip check). Both had their `.locals` reduced but the original dead code left in place, referencing `v2`, `v3`, etc. that no longer exist under the reduced `.locals` count.
+
+**Affected methods:**
+- `decompiled_castle/smali/rc/h.smali` → `B()Z` (line ~757) — returns `true` = user is VIP
+- `decompiled_castle/smali/rc/h.smali` → `C()Z` (line ~1211) — returns `false` = isNoVip is false
+
+**Fix:** Strip all dead code after the early return in both methods:
+
+```python
+def strip_bool_stub(filepath, method_sig, patch_comment, return_val):
+    with open(filepath, 'r') as f:
+        content = f.read()
+    parts = content.split(method_sig)
+    method_and_rest = parts[1]
+    end_idx = method_and_rest.index('.end method')
+    after_method = method_and_rest[end_idx + len('.end method'):]
+    clean_stub = (
+        f'\n    .locals 1\n\n'
+        f'    # PATCH: {patch_comment}\n'
+        f'    const/4 v0, {return_val}\n'
+        f'    return v0\n'
+        f'.end method'
+    )
+    with open(filepath, 'w') as f:
+        f.write(parts[0] + method_sig + clean_stub + after_method)
+
+strip_bool_stub('decompiled_castle/smali/rc/h.smali', '.method public final B()Z',
+    'always return true = user IS VIP (no ads shown)', '0x1')
+strip_bool_stub('decompiled_castle/smali/rc/h.smali', '.method public final C()Z',
+    'always return false (0) = user IS a VIP (NOT a "no VIP")', '0x0')
+```
+
+**Pattern:** Every time you see `VerifyError: Verifier rejected class X.Y: [method]: register index out of range`, the fix is always the same — find the patched method in the smali, strip all code after the early `return` instruction, leave only the minimal stub.
 
 ---
 
