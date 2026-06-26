@@ -2266,74 +2266,13 @@
 .end method
 
 .method public onResume()V
-    .locals 4
+    .locals 0
 
-    .line 1
+    # PATCH: suppress ad — call super and immediately finish, never start countdown
     invoke-super {p0}, Lcom/gxgx/base/base/BaseMvvmActivity;->onResume()V
 
-    .line 2
-    .line 3
-    .line 4
-    iget-wide v0, p0, Lcom/gxgx/daqiandy/ui/ads/SelfOperateAdsLandActivity;->e0:J
+    invoke-virtual {p0}, Landroid/app/Activity;->finish()V
 
-    .line 5
-    .line 6
-    const-wide/16 v2, 0x0
-
-    .line 7
-    .line 8
-    cmp-long v0, v0, v2
-
-    .line 9
-    .line 10
-    if-lez v0, :cond_0
-
-    .line 11
-    .line 12
-    invoke-virtual {p0}, Lcom/gxgx/daqiandy/ui/ads/SelfOperateAdsLandActivity;->l0()V
-
-    .line 13
-    .line 14
-    .line 15
-    goto :goto_0
-
-    .line 16
-    :cond_0
-    invoke-direct {p0}, Lcom/gxgx/daqiandy/ui/ads/SelfOperateAdsLandActivity;->r0()V
-
-    .line 17
-    .line 18
-    .line 19
-    :goto_0
-    invoke-virtual {p0}, Lcom/gxgx/base/base/BaseActivity;->getBinding()Landroidx/viewbinding/ViewBinding;
-
-    .line 20
-    .line 21
-    .line 22
-    move-result-object v0
-
-    .line 23
-    check-cast v0, Lcom/gxgx/daqiandy/databinding/ActivitySelfOperateAdsLandBinding;
-
-    .line 24
-    .line 25
-    iget-object v0, v0, Lcom/gxgx/daqiandy/databinding/ActivitySelfOperateAdsLandBinding;->adPlayer:Lcom/gxgx/daqiandy/widgets/player/AdvertisePlayer;
-
-    .line 26
-    .line 27
-    const/4 v1, 0x1
-
-    .line 28
-    invoke-virtual {v0, v1}, Lcom/gxgx/daqiandy/widgets/player/AdvertisePlayer;->setMuteState(Z)V
-
-    .line 29
-    .line 30
-    .line 31
-    invoke-virtual {p0}, Lcom/gxgx/daqiandy/ui/ads/SelfOperateAdsLandActivity;->k0()V
-
-    .line 32
-    .line 33
-    .line 34
     return-void
 .end method
 
