@@ -3393,6 +3393,15 @@
 .end method
 
 .method public final e0()V
+    .locals 0
+
+    # PATCH: skip ad display, go straight to main
+    invoke-virtual {p0}, Lcom/gxgx/daqiandy/ui/splash/SplashActivity;->n0()V
+
+    return-void
+.end method
+
+.method public final e0_original_disabled()V
     .locals 6
 
     .line 1
@@ -4292,32 +4301,11 @@
 .end method
 
 .method public final o0()V
-    .locals 1
+    .locals 0
 
-    .line 1
-    .line 2
-    new-instance v0, Lcom/gxgx/daqiandy/ui/splash/SplashActivity$b;
+    # PATCH: skip countdown, go straight to main
+    invoke-virtual {p0}, Lcom/gxgx/daqiandy/ui/splash/SplashActivity;->n0()V
 
-    .line 3
-    .line 4
-    .line 5
-    invoke-direct {v0, p0}, Lcom/gxgx/daqiandy/ui/splash/SplashActivity$b;-><init>(Lcom/gxgx/daqiandy/ui/splash/SplashActivity;)V
-
-    .line 6
-    .line 7
-    iput-object v0, p0, Lcom/gxgx/daqiandy/ui/splash/SplashActivity;->X:Landroid/os/CountDownTimer;
-
-    .line 8
-    .line 9
-    .line 10
-    invoke-static {v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNull(Ljava/lang/Object;)V
-
-    .line 11
-    .line 12
-    .line 13
-    invoke-virtual {v0}, Landroid/os/CountDownTimer;->start()Landroid/os/CountDownTimer;
-
-    .line 14
     return-void
 .end method
 
