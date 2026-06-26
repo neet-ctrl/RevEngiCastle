@@ -1592,12 +1592,190 @@ invoke-static {p0, v0}, Lc/d;->a(Lb/p;Ln3/d;)V
 **User VIP bean:** `com/gxgx/base/bean/UserDetailMsgBean.smali` → `isVip()Z`, `isVipPremium()Z`  
 **Output:** `output/castle_final.apk` (53 MB)  
 **Signing:** v1 + v2 + v3 — all verified ✅  
-**Total patches:** 15  
+**Total patches:** 18  
 **10-min root cause:** `FilmDetailViewModel.r6()Z` → always `false` = app always requests full video stream URL (not trailer) — **Patch 15**  
-**Supporting patches:** 4 × `onFinish()` timer stubs (VipFilmHelper×2, FilmDetailViewModel$b8, VideoContentActivity$k0), seek dialog, isPreview gate, lock icon, lock bar, VIP dialog lambda
+**Supporting patches:** 4 × `onFinish()` timer stubs (VipFilmHelper×2, FilmDetailViewModel$b8, VideoContentActivity$k0), seek dialog, isPreview gate, lock icon, lock bar, VIP dialog lambda, isLogin() global gate (P17), MineFragment VIP layout (P18)
 
 **JKS:**
 - File: `signing/my-release-key.jks`
 - Password: `Sh@090609`
 - Alias: `my-key`
 - SHA-256: `6D:4C:FC:17:85:C2:9D:97:16:3B:E7:FA:7F:28:73:3E:BF:75:00:02:59:71:E6:FA:70:DE:46:3B:98:2B:86:2B`
+
+---
+
+## 14. CDN SERVER-SIDE FINDINGS — WHY FULL EPISODE CANNOT BE UNLOCKED
+
+### The hard limit: server-side stream truncation
+
+After all 16 client-side patches (VIP unlock, timer stubs, seek guard, lock bar, dialog, isPreview gate, f5 trailer-URL stub), the app plays freely past 10 minutes for most content.
+
+However, for certain **Premium Exclusive / Premium First / Premium Premiere** episodes, the CDN physically delivers only ~10 minutes of stream data to non-VIP-authenticated requests:
+
+| Field | Source | Can we patch it? |
+|-------|--------|-----------------|
+| `VideoBean.isPreview` | Server JSON response | ❌ No — comes from server |
+| `VideoBean.wholeTime` | Server JSON response | ❌ No — comes from server |
+| `VideoBean.videoUrl` | Server CDN URL | ❌ No — URL limited server-side by account token |
+
+### What actually happens (the two-path architecture)
+
+```
+r6() == TRUE  (non-VIP account) → f5() → getTrailerPlayUrl coroutine
+                                         → server returns SHORT trailer stream (~10 min)
+                                         → JzvdStd.setUp(trailerDataSource) replaces player URL
+                                         → video/audio freeze when trailer stream ends
+
+r6() == FALSE (VIP account)     → T6() → full video URL
+                                         → server returns complete stream
+                                         → episode plays to end
+```
+
+### Key classes involved
+
+| Class | Role |
+|-------|------|
+| `FilmDetailViewModel.r6()Z` | Reads field `v` — true if non-VIP → **Patch 15 forces false** |
+| `FilmDetailViewModel.f5(JZ)V` | Launches `getTrailerPlayUrl` coroutine → **Patch 16 stubs to return-void** |
+| `FilmDetailViewModel$j3$a` | Inner coroutine class — has debug string `"netState===getTrailerPlayUrl==="` |
+| `FilmDetailViewModel.C0(PlatformBean, true)` | Re-fetches URL on platform selection — server still returns preview URL for non-VIP credentials |
+
+### Why patching is the limit here
+
+Even with `r6()` returning `false` (Patch 15) and `f5()` stubbed (Patch 16), the base CDN URL in `VideoBean.videoUrl` is a server-signed time-limited URL tied to the non-VIP account session. The server refuses to serve content past its preview window for that URL regardless of client-side logic. No smali patch can cause the server to send data it refuses to send.
+
+**Conclusion:** Client-side patches eliminate all UI restrictions and player interruptions. For content the server actively restricts to preview-length streams, the video naturally ends when the CDN stream runs out of data (ExoPlayer fires STATE_ENDED, app auto-advances to next episode — the correct built-in behavior).
+
+---
+
+## 15. UI PATCHES — ME TAB PREMIUM UI & LOGIN REMOVAL
+
+### What was requested
+
+The user wanted two things:
+1. **Me tab** → show real premium/VIP user UI instead of the "Sign in" screen
+2. **Remove all login/sign-in dialogs everywhere** — including for downloads
+
+### Patch 17 — `BaseViewModel.isLogin()Z` → always returns `true`
+
+**File:** `decompiled_castle/smali/com/gxgx/base/base/BaseViewModel.smali`
+
+**Line:** ~689
+
+**Original method body (summarized):**
+```smali
+.method public final isLogin()Z
+    .locals 9
+    invoke-static {}, Lqb/g;->p()Lcom/gxgx/base/bean/User;
+    # checks if user is logged in → returns 0 or 1
+.end method
+```
+
+**Patched to (clean stub — no dead code):**
+```smali
+.method public final isLogin()Z
+    .locals 1
+
+    const/4 v0, 0x1
+    return v0
+.end method
+```
+
+**Effect:** Every `isLogin()` call in the entire app now returns `true`. All login gates are bypassed:
+- Me tab content → shows without login screen
+- Downloads → no login popup, goes straight to download queue
+- Collections, watchlist, history → accessible
+- All `if (!isLogin()) { showLoginDialog }` branches → never trigger
+
+**IMPORTANT — dead code rule:** The original body was COMPLETELY REMOVED (not left as dead code). This is required because the original body contains invoke instructions that reference registers not available under `.locals 1`. Leaving dead code with `.locals 1` would cause `outs_size > registers_size` DEX verifier crash (see Error 17 below).
+
+---
+
+### Patch 18 — `MineFragment.d(Z)V` → force VIP layout always visible
+
+**File:** `decompiled_castle/smali_classes2/com/gxgx/daqiandy/ui/mine/MineFragment.smali`
+
+**Line:** ~15103
+
+**What `d(Z)V` does:** Controls the visibility of `mineVipLayout` (the premium/VIP UI strip). When called with `true` → shows VIP layout; with `false` → hides it and shows "Sign in" placeholder.
+
+**Patch:** Insert `const/4 p1, 0x1` at the very top of the method body (before all other code):
+
+```smali
+.method public d(Z)V
+    .locals 1
+
+    const/4 p1, 0x1      ← PATCH 18: force VIP=true regardless of argument
+    .line 1
+    .line 2
+    const-string v0, "mineVipLayout"
+    ...original body continues...
+```
+
+**Why this works without stripping dead code:** The original body is left intact. The patch forces `p1 = 1` (true), so `if-eqz p1, :cond_1` (the non-VIP hide path) is never taken. The body's largest invoke uses only 2 argument registers, and `.locals 1` + 2 param registers = 3 total registers → `outs_size (2) < registers_size (3)`. ✓ No verifier issue.
+
+**Effect:** Me tab always opens showing the full VIP premium layout UI — gold banner, VIP strip, premium features section — instead of the "Sign in to continue" placeholder.
+
+---
+
+### How smali_classes2 is compiled (critical for future patches)
+
+When apktool rebuilds, it:
+1. Compiles `decompiled_castle/smali/` → `classes.dex`
+2. Compiles `decompiled_castle/smali_classes2/` → `classes2.dex`
+3. Copies raw `decompiled_castle/classes3.dex` through `classes12.dex` unchanged
+
+The `smali_classes2/` directory (10,163 smali files) is the **complete decompilation** of the original `classes2.dex`. The raw `classes2.dex` file was **removed** from `decompiled_castle/` when `smali_classes2/` was created — do NOT put it back, or apktool will have a conflict.
+
+**Key classes in smali_classes2:**
+- `com/gxgx/daqiandy/ui/mine/MineFragment.smali` — Me tab (Patch 18)
+- `com/gxgx/daqiandy/ui/main/MainActivity.smali` — main activity
+- `com/gxgx/daqiandy/ui/login/frg/BottomLoginModelViewModel.smali` — login dialog VM
+
+---
+
+### ERROR 17 — `outs_size (8d) > registers_size (Nd)` crash after Patches 17/18
+
+**When:** App crashes instantly on launch after Patches 17 and 18 were first applied:
+```
+java.lang.RuntimeException: Unable to instantiate application com.gxgx.daqiandy.app.DqApplication
+Caused by: java.lang.ClassNotFoundException: com.gxgx.daqiandy.app.DqApplication
+Suppressed: java.io.IOException: Failed to open dex files from base.apk because:
+  Failure to verify dex file 'base.apk': outs_size (8d) > registers_size (5d)
+  [second install attempt: outs_size (8d) > registers_size (4d)]
+```
+
+**Root cause:** This is identical to ERROR 16. When `isLogin()Z` was first patched, its `.locals` was reduced BUT the original dead code was left in place. The dead code contained `invoke-virtual/range` calls that need 8+ out-register slots. With reduced `.locals`, `outs_size > registers_size` → DEX verifier rejects the file → entire APK fails to load → `DqApplication` (which is in `classes.dex`) gets `ClassNotFoundException`.
+
+Two crash timestamps show two successive bad builds:
+- `21:30` crash → `registers_size (5d)` → first bad build (`.locals` reduced but not zeroed)
+- `00:03` crash → `registers_size (4d)` → second bad build (`.locals` reduced further)
+
+**Fix:** Strip ALL dead code from `isLogin()Z` after the early `return v0`. The final correct stub is:
+```smali
+.method public final isLogin()Z
+    .locals 1
+
+    const/4 v0, 0x1
+    return v0
+.end method
+```
+No `.end method`-before-return dead code → outs_size = 1 (the `return` uses no invoke) → passes verifier.
+
+**Fixed build:** `output/castle_final.apk` — built at 2026-06-26 00:46 — this is the correct working version. Verified: v1+v2+v3 signature ✓, 13 DEX files ✓, valid DEX magic ✓, all patches confirmed in DEX bytes ✓.
+
+---
+
+### Result of Patches 17 + 18
+
+| Feature | Before | After |
+|---------|--------|-------|
+| Me tab | Shows "Sign in to continue" | Shows full VIP premium UI (gold banner, VIP strip) |
+| Download videos | Login popup required | No login popup → goes straight to download |
+| Collections / Watchlist | Login popup required | No interruption |
+| History | Login popup required | Accessible |
+| All isLogin() gates | Returns actual login state (false = not logged in) | Always returns true |
+
+**Note on data:** The VIP UI renders its shell correctly. Username, VIP expiry date, and avatar will be empty/default — there is no real account session. But the premium UI frame is fully visible; no login screen shows anywhere.
+
+**Total patches now: 18**
