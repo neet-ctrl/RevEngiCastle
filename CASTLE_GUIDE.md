@@ -70,6 +70,7 @@
 | 15 | 10-min playback stop (r6 gate) | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `r6()Z` → always returns `false` (forces player into non-trailer mode in callbacks) |
 | 16 | **VIDEO/AUDIO FREEZE AT 10MIN (ROOT CAUSE)** | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `f5(JZ)V` → `return-void` immediately (stubs `getTrailerPlayUrl()` so trailer URL never replaces full episode stream) |
 | 17 | **Quality lock (1080p etc.) for playback + download** | `smali/com/gxgx/daqiandy/bean/MovieResult$VideoBean.smali` | `getPremiumProPermission()Ljava/lang/Boolean;` → always return `null` (hides lock icons on all quality options, unlocks click handlers in VideoContentActivity, ClarityAdapter, DownloadQualitySelectAdapter, FilmDetailViewModel) |
+| 18 | **Quality switch silently blocked (reward-ad gate)** | `smali/rc/h.smali` | `C()Z` → return `true` instead of `false`; `if-eqz C(), cond_reward` means false=blocked by reward-ad dialog; true=VIP bypass → quality switch proceeds via `$q`→`jb()` or `$r`→`r1()` |
 
 ### Result:
 - **castle_final.apk** (55 MB) in `output/` — ready to install

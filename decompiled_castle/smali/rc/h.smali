@@ -765,8 +765,8 @@
 .method public final C()Z
     .locals 1
 
-    # PATCH: always return false (0) = user IS a VIP (NOT a "no VIP")
-    const/4 v0, 0x0
+    # PATCH 18: always return true (1) = isVip() = yes, VIP; bypasses reward-ad gate before quality switch
+    const/4 v0, 0x1
     return v0
 .end method
 
