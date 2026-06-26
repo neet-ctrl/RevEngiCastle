@@ -1,5 +1,5 @@
 # CASTLE APK — Complete Master Guide
-> Written: 2026-06-25
+> Written: 2026-06-25 | Last updated: 2026-06-26
 > App: Castle (com.external.castle) | Internal package: com.gxgx.daqiandy
 > This is the AUTHORITATIVE guide — supersedes all previous MD files (COMPLETE_GUIDE.md, STEPS_DONE.md, PROJECT_CONFIRMATION.md)
 > Use this for all future APK work — both for the Castle APK and any other Android APK.
@@ -21,6 +21,8 @@
 11. [How To Apply This To Any Other APK](#11-how-to-apply-to-any-other-apk)
 12. [File Structure Reference](#12-file-structure)
 13. [Previous Work (Smart Toolbox App) — Reference](#13-previous-work-reference)
+14. [CDN Server-Side Findings — Why Full Episode Cannot Be Unlocked](#14-cdn-findings)
+15. [UI Patches — Me Tab Premium UI & Login Removal](#15-ui-patches)
 
 ---
 
@@ -69,15 +71,19 @@
 | 14 | Lock progress bar position | `smali_classes2/com/gxgx/daqiandy/widgets/player/DetailPlayer.smali` | `getLockPg()J` → always returns `0L` (lock bar at zero) |
 | 15 | 10-min playback stop (r6 gate) | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `r6()Z` → always returns `false` (forces player into non-trailer mode in callbacks) |
 | 16 | **VIDEO/AUDIO FREEZE AT 10MIN (ROOT CAUSE)** | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `f5(JZ)V` → `return-void` immediately (stubs `getTrailerPlayUrl()` so trailer URL never replaces full episode stream) |
+| 17 | **Login gate removal (global)** | `smali/com/gxgx/base/base/BaseViewModel.smali` | `isLogin()Z` → always returns `true` — removes every login check app-wide (Me tab, downloads, collections, watchlist, all dialogs) |
+| 18 | **Me tab — force VIP premium UI** | `smali_classes2/com/gxgx/daqiandy/ui/mine/MineFragment.smali` | `d(Z)V` → forces `p1 = true` at entry so `mine_vip_layout` is always VISIBLE (shows premium UI strip instead of login screen) |
 
 ### Result:
-- **castle_final.apk** (55 MB) in `output/` — ready to install
+- **castle_final.apk** (53 MB) in `output/` — ready to install
 - Signed with v1 + v2 + v3 (all three verification schemes pass)
 - All VIP/premium content unlocked for all users (no login or subscription required for client-side checks)
-- 10-minute premium video playback restriction fully removed — videos now play the full stream without stopping
+- No lock icon, no lock progress bar, no paywall popup, no countdown timer
 - Seeking past the 10-minute mark no longer shows the "Subscribe to Premium" dialog
-- Seek position check always returns "not restricted" — full timeline scrubbing available
-- No lock icon, no lock progress bar, no paywall popup
+- **Me tab shows real premium VIP UI** — gold/premium banner, VIP layout, no login screen
+- **Login/sign-in dialogs removed everywhere** — every `isLogin()` call returns `true`, all login gates bypassed
+- **Downloads have no login requirement** — download queue accessible without account
+- Videos auto-advance to next episode when the 10-minute CDN preview stream ends (see Section 14 for why full episode cannot be unlocked)
 - NO manifest changes needed (Castle is a single APK, not split)
 
 ### Why video/audio froze at 10min even after Patches 1–15 (IMPORTANT — Patch 16 fix):
