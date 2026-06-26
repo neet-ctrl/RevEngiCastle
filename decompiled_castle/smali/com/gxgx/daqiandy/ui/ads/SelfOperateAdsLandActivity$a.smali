@@ -113,7 +113,7 @@
 
 # virtual methods
 .method public final a(Landroid/content/Context;ZLcom/gxgx/daqiandy/widgets/ads/AdsTopVIewUtil$TopViewContentBean;Ljava/lang/String;Ljava/lang/Long;)V
-    .locals 2
+    .locals 0
     .param p1    # Landroid/content/Context;
         .annotation build Lorg/jetbrains/annotations/NotNull;
         .end annotation
@@ -130,6 +130,9 @@
         .annotation build Lorg/jetbrains/annotations/Nullable;
         .end annotation
     .end param
+
+    # PATCH: suppress landscape startup ad — never launch SelfOperateAdsLandActivity
+    return-void
 
     .line 1
     const-string v0, "context"
