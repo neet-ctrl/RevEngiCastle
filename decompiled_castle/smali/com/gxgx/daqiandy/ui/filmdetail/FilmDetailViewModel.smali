@@ -7849,6 +7849,8 @@
     .line 14
     move-result v0
 
+    const/4 v0, 0x1
+
     .line 15
     if-nez v0, :cond_0
 
@@ -12193,6 +12195,8 @@
     .line 198
     move-result v1
 
+    const/4 v1, 0x1
+
     .line 199
     if-nez v1, :cond_2
 
@@ -12758,6 +12762,8 @@
     .line 4
     move-result v0
 
+    const/4 v0, 0x1
+
     .line 5
     if-nez v0, :cond_0
 
@@ -13095,6 +13101,8 @@
     .line 61
     .line 62
     move-result v4
+
+    const/4 v4, 0x1
 
     .line 63
     if-eqz v4, :cond_2
@@ -13544,6 +13552,8 @@
     .line 8
     .line 9
     move-result v0
+
+    const/4 v0, 0x1
 
     .line 10
     if-nez v0, :cond_0
