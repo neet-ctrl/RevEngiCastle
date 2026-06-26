@@ -302,24 +302,6 @@
 .method public static synthetic oneKeyLogin$default(Lcom/gxgx/daqiandy/commonmodel/LoginModelModel;Landroid/app/Activity;Ljava/lang/Integer;ILjava/lang/Object;)V
     .locals 0
 
-    .line 1
-    and-int/lit8 p3, p3, 0x2
-
-    .line 2
-    .line 3
-    if-eqz p3, :cond_0
-
-    .line 4
-    .line 5
-    const/4 p2, 0x0
-
-    .line 6
-    :cond_0
-    invoke-virtual {p0, p1, p2}, Lcom/gxgx/daqiandy/commonmodel/LoginModelModel;->oneKeyLogin(Landroid/app/Activity;Ljava/lang/Integer;)V
-
-    .line 7
-    .line 8
-    .line 9
     return-void
 .end method
 
@@ -348,7 +330,7 @@
 .end method
 
 .method public final oneKeyLogin(Landroid/app/Activity;Ljava/lang/Integer;)V
-    .locals 1
+    .locals 0
     .param p1    # Landroid/app/Activity;
         .annotation build Lorg/jetbrains/annotations/NotNull;
         .end annotation
@@ -358,24 +340,5 @@
         .end annotation
     .end param
 
-    .line 1
-    const-string v0, "context"
-
-    .line 2
-    .line 3
-    invoke-static {p1, v0}, Lkotlin/jvm/internal/Intrinsics;->checkNotNullParameter(Ljava/lang/Object;Ljava/lang/String;)V
-
-    .line 4
-    .line 5
-    .line 6
-    check-cast p1, Landroidx/appcompat/app/AppCompatActivity;
-
-    .line 7
-    .line 8
-    invoke-direct {p0, p1, p2}, Lcom/gxgx/daqiandy/commonmodel/LoginModelModel;->getPhoneNumber(Landroidx/appcompat/app/AppCompatActivity;Ljava/lang/Integer;)V
-
-    .line 9
-    .line 10
-    .line 11
     return-void
 .end method
