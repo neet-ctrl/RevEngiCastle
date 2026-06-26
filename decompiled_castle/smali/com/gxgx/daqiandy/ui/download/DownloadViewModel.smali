@@ -3042,6 +3042,8 @@
     .line 18
     move-result v0
 
+    const/4 v0, 0x1
+
     .line 19
     if-nez v0, :cond_1
 

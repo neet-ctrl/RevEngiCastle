@@ -6265,6 +6265,8 @@
     .line 13
     move-result p1
 
+    const/4 p1, 0x1
+
     .line 14
     const/4 v0, 0x2
 
