@@ -2,3 +2,6 @@ output/calc_final.apk filter=lfs diff=lfs merge=lfs -text
 output/calc_merged_unsigned.apk filter=lfs diff=lfs merge=lfs -text
 output/castle_final.apk filter=lfs diff=lfs merge=lfs -text
 output/castle_patched.apk filter=lfs diff=lfs merge=lfs -text
+output/castle_dl_final.apk filter=lfs diff=lfs merge=lfs -text
+output/castle_dl_signed.apk filter=lfs diff=lfs merge=lfs -text
+output/castle_patched_dl.apk filter=lfs diff=lfs merge=lfs -text

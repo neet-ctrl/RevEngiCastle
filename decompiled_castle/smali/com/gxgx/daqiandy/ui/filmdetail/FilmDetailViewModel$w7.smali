@@ -399,7 +399,7 @@
 
     .line 156
     .line 157
-    invoke-static/range {v14 .. v26}, Lcom/gxgx/daqiandy/widgets/ads/max/YowinRewardView;->showAd$default(Lcom/gxgx/daqiandy/widgets/ads/max/YowinRewardView;Ljava/lang/String;ZLcom/gxgx/daqiandy/bean/AdsMaxStateBean;Lcom/gxgx/daqiandy/widgets/ads/AdsTopVIewUtil$TopViewContentBean;ZLcom/gxgx/daqiandy/bean/AdsMaxStateBean;ZLjava/lang/String;Ljava/lang/Long;IILjava/lang/Object;)V
+    invoke-virtual {v13}, Lcom/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel$w7$a;->complete()V
 
     .line 158
     .line 159

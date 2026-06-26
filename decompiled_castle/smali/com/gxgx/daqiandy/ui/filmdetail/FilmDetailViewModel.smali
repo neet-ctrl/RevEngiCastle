@@ -36521,7 +36521,7 @@
 
     .line 60
     .line 61
-    invoke-virtual {v0, v1, v2}, Landroidx/fragment/app/DialogFragment;->show(Landroidx/fragment/app/FragmentManager;Ljava/lang/String;)V
+    invoke-virtual {v12}, Lcom/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel$w7;->a()V
 
     .line 62
     .line 63
@@ -44352,7 +44352,7 @@
 
     .line 82
     .line 83
-    invoke-virtual {v0, v1, v2}, Landroidx/fragment/app/DialogFragment;->show(Landroidx/fragment/app/FragmentManager;Ljava/lang/String;)V
+    invoke-virtual {v12}, Lcom/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel$x7;->a()V
 
     .line 84
     .line 85
