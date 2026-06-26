@@ -1272,6 +1272,15 @@
 .end method
 
 .method public initData()V
+    .locals 0
+
+    # PATCH: skip startup ad — finish immediately
+    invoke-virtual {p0}, Landroid/app/Activity;->finish()V
+
+    return-void
+.end method
+
+.method public initData_original_disabled()V
     .locals 6
 
     .line 1
