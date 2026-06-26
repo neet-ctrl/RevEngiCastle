@@ -689,50 +689,7 @@
 .method public final isLogin()Z
     .locals 1
 
-    .line 1
-    invoke-static {}, Lqb/g;->p()Lcom/gxgx/base/bean/User;
-
-    .line 2
-    .line 3
-    .line 4
-    move-result-object v0
-
-    .line 5
-    if-eqz v0, :cond_0
-
-    .line 6
-    .line 7
-    invoke-virtual {v0}, Lcom/gxgx/base/bean/User;->getToken()Ljava/lang/String;
-
-    .line 8
-    .line 9
-    .line 10
-    move-result-object v0
-
-    .line 11
-    goto :goto_0
-
-    .line 12
-    :cond_0
-    const/4 v0, 0x0
-
-    .line 13
-    :goto_0
-    if-eqz v0, :cond_1
-
-    .line 14
-    .line 15
     const/4 v0, 0x1
-
-    .line 16
-    goto :goto_1
-
-    .line 17
-    :cond_1
-    const/4 v0, 0x0
-
-    .line 18
-    :goto_1
     return v0
 .end method
 

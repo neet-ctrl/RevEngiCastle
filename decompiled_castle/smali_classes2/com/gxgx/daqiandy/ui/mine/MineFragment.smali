@@ -15103,6 +15103,7 @@
 .method public d(Z)V
     .locals 1
 
+    const/4 p1, 0x1
     .line 1
     .line 2
     const-string v0, "mineVipLayout"
