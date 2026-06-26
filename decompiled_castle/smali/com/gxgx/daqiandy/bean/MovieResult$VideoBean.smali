@@ -629,11 +629,8 @@
     .annotation build Lorg/jetbrains/annotations/Nullable;
     .end annotation
 
-    .line 1
-    iget-object v0, p0, Lcom/gxgx/daqiandy/bean/MovieResult$VideoBean;->premiumProPermission:Ljava/lang/Boolean;
-
-    .line 2
-    .line 3
+    # PATCH 17: always return null = quality NOT premium-locked (unlocks 1080p etc. for playback and download)
+    const/4 v0, 0x0
     return-object v0
 .end method
 

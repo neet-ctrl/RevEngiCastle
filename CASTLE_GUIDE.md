@@ -69,6 +69,7 @@
 | 14 | Lock progress bar position | `smali_classes2/com/gxgx/daqiandy/widgets/player/DetailPlayer.smali` | `getLockPg()J` → always returns `0L` (lock bar at zero) |
 | 15 | 10-min playback stop (r6 gate) | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `r6()Z` → always returns `false` (forces player into non-trailer mode in callbacks) |
 | 16 | **VIDEO/AUDIO FREEZE AT 10MIN (ROOT CAUSE)** | `smali/com/gxgx/daqiandy/ui/filmdetail/FilmDetailViewModel.smali` | `f5(JZ)V` → `return-void` immediately (stubs `getTrailerPlayUrl()` so trailer URL never replaces full episode stream) |
+| 17 | **Quality lock (1080p etc.) for playback + download** | `smali/com/gxgx/daqiandy/bean/MovieResult$VideoBean.smali` | `getPremiumProPermission()Ljava/lang/Boolean;` → always return `null` (hides lock icons on all quality options, unlocks click handlers in VideoContentActivity, ClarityAdapter, DownloadQualitySelectAdapter, FilmDetailViewModel) |
 
 ### Result:
 - **castle_final.apk** (55 MB) in `output/` — ready to install
@@ -1586,8 +1587,9 @@ invoke-static {p0, v0}, Lc/d;->a(Lb/p;Ln3/d;)V
 **User VIP bean:** `com/gxgx/base/bean/UserDetailMsgBean.smali` → `isVip()Z`, `isVipPremium()Z`  
 **Output:** `output/castle_final.apk` (53 MB)  
 **Signing:** v1 + v2 + v3 — all verified ✅  
-**Total patches:** 15  
+**Total patches:** 17  
 **10-min root cause:** `FilmDetailViewModel.r6()Z` → always `false` = app always requests full video stream URL (not trailer) — **Patch 15**  
+**Quality lock root cause:** `MovieResult$VideoBean.getPremiumProPermission()` → always `null` = quality options (1080p etc.) never flagged as premium-locked — **Patch 17**  
 **Supporting patches:** 4 × `onFinish()` timer stubs (VipFilmHelper×2, FilmDetailViewModel$b8, VideoContentActivity$k0), seek dialog, isPreview gate, lock icon, lock bar, VIP dialog lambda
 
 **JKS:**
