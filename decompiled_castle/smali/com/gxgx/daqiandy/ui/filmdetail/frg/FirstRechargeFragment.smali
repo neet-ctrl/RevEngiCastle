@@ -393,6 +393,9 @@
         .end annotation
     .end param
 
+    # PATCH: block "Huge Savings / Premium Bundle" first-recharge promo dialog permanently
+    return-void
+
     .line 1
     const-class v0, Landroidx/fragment/app/DialogFragment;
 

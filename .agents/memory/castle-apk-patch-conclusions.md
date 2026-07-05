@@ -66,3 +66,8 @@ Keystore: `signing/my-release-key.jks`, alias: `my-key`, pass: `Sh@090609`
 `castle_patched_signed.apk` — 53MB, signed v1+v2+v3, all patches applied. Best achievable with smali patching alone.
 
 **DEX locals rule:** when stubbing a void method with return-void but leaving dead code renamed (e.g. `_original_disabled`), keep original `.locals N` on the disabled copy.
+
+## Patch 19: "Huge Savings / Premium Bundle" first-recharge promo popup — BLOCKED ✅
+The countdown-timer discount popup shown over film detail/player/home screens ("Huge Savings! Premium Bundle Ends Soon", ₹79/month, "Get it now") is `FirstRechargeFragment` (`decompiled_castle/smali/com/gxgx/daqiandy/ui/filmdetail/frg/FirstRechargeFragment.smali`), triggered from multiple call sites (`VideoContentActivity`, `HomePageFragment`).
+
+Rather than patching every call site, stub the fragment's own show method `B(FragmentManager, String)V` to `return-void` immediately — this blocks the dialog everywhere it's invoked from, permanently, with one patch.
